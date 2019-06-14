@@ -2,26 +2,37 @@ var socket;
 var btn_joinroom;
 
 function preload() {
+  //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
-  btn_joinroom = [loadImage('assets/btn_joinroom_up.png'), loadImage('assets/btn_joinroom_p.png'), loadImage('assets/btn_joinroom_hv.png')];
 }
 
 function setup() {
+	
+	//Sapa canvas och sätt in bakgrund
 	createCanvas(windowWidth, windowHeight);
 	image(bg, 0, 0, windowWidth, windowHeight);
-	//image(btn_joinroom[0], (windowWidth - btn_joinroom[0].width) / 2 , (windowHeight - btn_joinroom[0].height) / 2, windowWidth / 10, windowHeight / 10);
-	image(btn_joinroom[0], 0, 0, 600, 200);
 	
+	//Skapa knapp-sprite och animation
+	btn_joinroom = createSprite((windowWidth - 600) / 2, 350);
+	btn_joinroom.addAnimation('standard', 'assets/btn_joinroom_up.png', 'assets/btn_joinroom_hv.png', 'assets/btn_joinroom_p.png');
+	//btn_joinroom.animation.playing = false;
+	btn_joinroom.onMouseOver = function() {
+		this.goToFrame(2);
+	};
+	btn_joinroom.playing = false;
+	 
 	
+	//Anslut till socketservern
 	socket = io.connect('http://192.168.0.29:3000');
 	//socket.on('mouse', newDrawing);
 	
 	
-	$('body').addClass('overflow'); // För att förhindra scroll på mobilen
+	// För att förhindra scroll på mobilen
+	$('body').addClass('overflow'); 
 }
 
 function draw() {
-	//ellipse(data.x, data.y, 36, 36);
+	drawSprites();
 }
 
 
@@ -42,12 +53,13 @@ function touchStarted () {
   }
 }
 
+/*
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   image(bg, 0, 0, windowWidth, windowHeight);
 
 }
-
+*/
 
 
 
