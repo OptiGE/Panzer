@@ -1,0 +1,14 @@
+Bra länkar:
+Javascript Map -> 	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+P5 GUI -> 		https://github.com/bitcraftlab/p5.gui
+Socket rooms ->		https://socket.io/docs/rooms-and-namespaces/
+
+
+
+Socket meddelandenamn:
+get_name -> _a, _d
+join_room -> _a, _d
+create_room -> _a, _d
+
+
+Använda bootstrap modals för text input. 
