@@ -1,73 +1,49 @@
-var config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
+var socket;
+
+function preload() {
+  bg = loadImage('assets/sky.png');
+}
+
+function setup() {
+	createCanvas(200, 200);
+	background(51);
+	image(bg, 0, 0, windowWidth, windowHeight);
+	
+	socket = io.connect('http://192.168.0.29:3000');
+	socket.on('join_room_approved', roomJoined);
+}
+
+function touchStarted () {
+  var fs = fullscreen();
+  if (!fs) {
+    fullscreen(true);
+  }
+}
+
+function roomJoined(data) {
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function mouseDragged() {
+	var data = {
+		x: mouseX,
+		y: mouseY
+	}
+	socket.emit('mouse', data);
+}
+
+function draw() {
+	//ellipse(data.x, data.y, 36, 36);
+}
+
+/* prevents the mobile browser from processing some default
+ * touch events, like swiping left for "back" or scrolling
+ * the page.
+ */
+document.ontouchmove = function(event) {
+    event.preventDefault();
 };
-
-var game = new Phaser.Game(config);
-
-function preload ()
-{
-	this.load.spritesheet('button', 'assets/button_sprite_sheet.png', 193, 71);
-    this.load.image('sky', 'assets/sky.png');
-}
-
-
-var button;
-
-
-function create ()
-{
-    this.add.image(400, 300, 'sky');
-	
-	button = game.add.button(game.world.centerX - 95, 400, 'button', actionOnClick, this, 2, 1, 0);
-
-    button.onInputOver.add(over, this);
-    button.onInputOut.add(out, this);
-    button.onInputUp.add(up, this);
-	
-}
-
-
-
-
-
-function up() {
-    console.log('button up', arguments);
-}
-
-function over() {
-    console.log('button over');
-}
-
-function out() {
-    console.log('button out');
-}
-
-function actionOnClick () {
-
-    background.visible =! background.visible;
-
-}
-
-
-
-
-
-
-// ------------------ U P D A T E -----------------
-
-function update ()
-{
-}
-
-
-
-
-
 
