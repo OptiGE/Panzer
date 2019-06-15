@@ -1,8 +1,6 @@
 var socket;
 var btn_joinroom;
-var canvasHeight;
-var canvasWidth;
-
+var btn_createroom;
 
 function preload() {
   //Ladda in non-sprite assets
@@ -11,16 +9,10 @@ function preload() {
 
 function setup() {
 	
-	//Sätt canvas width och height till något smart här. KOlla om man kan låsa rotation
 	
-	//Sapa canvas och sätt in bakgrund
+	//Skapa Canvas och bakgrund
 	createCanvas(windowWidth, windowHeight);
 	image(bg, 0, 0, windowWidth, windowHeight);
-	
-	//Sätt storlek för knappar
-	var buttonWidth = windowWidth / 12;
-	var buttonHeight = windowHeight / 4;
-	
 	
 	//Skapa Join room knapp
 	btn_joinroom = createSprite(0, 0, 600, 200);
@@ -39,15 +31,13 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	
-	
 	//Knapp-event hanterare
 	btn_joinroom.onMousePressed = function() {
-		console.log("btn_joinroom pressed");
+		$('#joinRoomModal').modal('show');
 		btn_joinroom.animation.changeFrame(1);
 	};
 	
 	btn_createroom.onMousePressed = function() {
-		console.log("btn_createroom pressed");
 		btn_createroom.animation.changeFrame(1);
 	};
 	
@@ -57,10 +47,6 @@ function draw() {
 	drawSprites();
 }
 
-
-function titlescreen() {
-	
-}
 
 
 
@@ -75,18 +61,10 @@ function titlescreen() {
   }
 }
  */
-/*
+
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  image(bg, 0, 0, windowWidth, windowHeight);
-
+	console.log("Window resized");
 }
-*/
-
-
-
-
-
 
 
 function addStdButton(btn, heightOffset, img1, img2){
@@ -95,42 +73,14 @@ function addStdButton(btn, heightOffset, img1, img2){
 	btn.scale = windowHeight / (7*200); //scale sätts så att knappens höjd om 200 översätts till 1/7 av skärmen
 	btn.mouseActive = true;
 	btn.position.x = ((windowWidth) / 2);
-	btn.position.y = ((windowHeight + 150) / 2) + ((heightOffset * 200*btn.scale)*1.3);
+	btn.position.y = ((windowHeight + 100) / 2) + ((heightOffset * 200*btn.scale)*1.3);
 	console.log(btn.height);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function mouseReleased() {
-	console.log("Mouse released");
 	btn_joinroom.animation.changeFrame(0);
 	btn_createroom.animation.changeFrame(0);
 }
-
-
-
-
-
-
-
-
-
-
 
 function mouse0Dragged() {
 	
