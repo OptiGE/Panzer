@@ -23,7 +23,7 @@ var server = app.listen(3000, started);
 function started() {
   var host = server.address().address;
   var port = server.address().port;
-  console.log('Servern kör på '+ host + ':' + port);
+  console.log('Servern kör på '+ host + port);
 }
 
 // Ge ut 'public' mappen som statisk förstasida vid get. 
@@ -75,10 +75,10 @@ function newConnection(socket) {
 			socket.join(roomName);
 			roomMap.set(roomName, [socket.id]);
 			console.log(getName(socket.id) + ' successfully created room: ' + roomName);
-			socket.broadcast.to(socket.id).emit('create_room_approved', roomName);
+			socket.broadcast.to(socket.id).emit('create_room_approved', {roomName: roomName});
 		}else{
-			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');
-			socket.broadcast.to(socket.id).emit('name_denied', name);
+			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');		
+			io.emit('alert', roomName);
 		}
       }
     );

@@ -5,6 +5,7 @@ var btn_createroom;
 function preload() {
   //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
+  title = loadImage('assets/title.png');
 }
 
 function setup() {
@@ -13,6 +14,7 @@ function setup() {
 	//Skapa Canvas och bakgrund
 	createCanvas(windowWidth, windowHeight);
 	image(bg, 0, 0, windowWidth, windowHeight);
+	//image(title, 0, 0, windowWidth / 1.2, 200);
 	
 	//Skapa Join room knapp
 	btn_joinroom = createSprite(0, 0, 600, 200);
@@ -24,7 +26,12 @@ function setup() {
 	
 	//Anslut till socketservern
 	socket = io.connect('http://192.168.0.29:3000');
-	//socket.on('mouse', newDrawing);
+	socket.on('alert', socketAlert);
+	socket.on('create_room_approved', function(data){console.log(data);});
+	
+	socket.on('chat message', function(msg){
+	console.log('Client side message: ' + msg)
+	});
 	
 	
 	// För att förhindra scroll på mobilen
@@ -35,11 +42,13 @@ function setup() {
 	btn_joinroom.onMousePressed = function() {
 		//$('#joinRoomModal').modal('toggle');
 		$('#joinRoomModal').modal('toggle');
-		console.log("Showing modal");
+		console.log("Showing join room modal");
 		btn_joinroom.animation.changeFrame(1);
 	};
 	
 	btn_createroom.onMousePressed = function() {
+		$('#createRoomModal').modal('toggle');
+		console.log("Showing create room modal");
 		btn_createroom.animation.changeFrame(1);
 	};
 	
@@ -63,6 +72,25 @@ function draw() {
   }
 }
  */
+
+function socketAlert(msg){
+	alert(msg);
+}
+ 
+ function sendRQ(rq){
+	 if (rq == 0){
+		 
+	 }else if (rq == 1){
+		if (document.getElementById('inputCRoomName').value != ''){
+			socket.emit('create_room', document.getElementById('inputCRoomName').value);
+		}else{
+			alert("You can't create a room with no name!");
+		}
+	 }else if (rq == 2){
+		 
+	 }
+	 
+ }
 
 function windowResized() {
 	console.log("Window resized");
@@ -91,5 +119,5 @@ function mouse0Dragged() {
 		y: mouseY
 	}
 	
-	//socket.emit('mouse', data);
+	socket.emit('mouse', data);
 }

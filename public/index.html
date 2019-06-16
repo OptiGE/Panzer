@@ -71,20 +71,40 @@
 	<!-- p5.js huvudscript -->
     <script src="sketch.js"></script>
 	
+	
 	<!-- Join room modal -->
 	<div class="modal fade" id="joinRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog" role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
-			<h5 class="modal-title" id="exampleModalLabel" style="text-align:center">Let's go!</h5>
+			<h5 class="modal-title" id="exampleModalLabel" style="text-align:center">Join room</h5>
 		  </div>
 		  <div class="modal-body">
 			<br><p style="text-align:center">Which room would you like to join?</p><br>
-			<input type="email" class="form-control" id="inputRoomName" aria-describedby="emailHelp" placeholder="" style="font-size: 3vh !important; ">
+			<input type="email" class="form-control" id="inputJRoomName" aria-describedby="emailHelp" placeholder="" style="font-size: 3vh !important; ">
 		  </div>
 		  <div class="modal-footer">
 			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 			<button type="button" class="btn btn-primary">Join room</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+	
+	<!-- Create room modal -->
+	<div class="modal fade" id="createRoomModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel" style="text-align:center">Create room</h5>
+		  </div>
+		  <div class="modal-body">
+			<br><p style="text-align:center">Enter a name for your room</p><br>
+			<input type="email" class="form-control" id="inputCRoomName" aria-describedby="emailHelp" placeholder="" style="font-size: 3vh !important; ">
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sendRQ(1);">Create room</button>
 		  </div>
 		</div>
 	  </div>
