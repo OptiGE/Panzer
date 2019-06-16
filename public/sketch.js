@@ -33,7 +33,9 @@ function setup() {
 	
 	//Knapp-event hanterare
 	btn_joinroom.onMousePressed = function() {
-		$('#joinRoomModal').modal('show');
+		//$('#joinRoomModal').modal('toggle');
+		$('#joinRoomModal').modal('toggle');
+		console.log("Showing modal");
 		btn_joinroom.animation.changeFrame(1);
 	};
 	
