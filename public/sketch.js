@@ -11,8 +11,7 @@ var buttons_clickable = true;
 var current_scene;
 
 // Typsnittsvariabler
-let font,
-  fontsize = 40;
+let font;
 
 function preload() {
   //Ladda in non-sprite assets
@@ -28,7 +27,7 @@ function setup() {
 	
 	// Bestäm typsnittskaraktäristik
 	textFont(font);
-	textSize(fontsize);
+	textSize(windowHeight / 10);
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
@@ -93,7 +92,8 @@ function roomScene(name){
 	//image(title, 0, 0, windowWidth / 1.2, 200);
 	
 	//Sätt spelarens namn som titel
-	
+	fill(0); // Svarta hela streck
+	text(name, windowWidth / 2, windowHeight / 3.5); //Kom ihåg att texten är center aligned
 	
 	//Skapa Join room knapp
 	btn_joinroom = createSprite(0, 0, 600, 200);
@@ -148,7 +148,7 @@ function gameScene(){
  function sendRQ(rq){
 	 if (rq == 0){
 		if (document.getElementById('inputName').value != ''){
-			socket.emit('get_name', document.getElementById('inputName').value);
+			socket.emit('get_name', document.getElementById('inputName').value.toUpperCase());
 		}else{
 			alert("You can't log in without a name!");
 		}

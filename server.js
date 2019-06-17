@@ -24,6 +24,10 @@ function started() {
   var host = server.address().address;
   var port = server.address().port;
   console.log('Servern kör på '+ host + port);
+  console.log(" - - - - ");
+	console.log(" - - -");
+	console.log(" - - ");
+	console.log(" - ");
 }
 
 // Ge ut 'public' mappen som statisk förstasida vid get. 
@@ -39,6 +43,7 @@ var io = require('socket.io')(server);
 
 // Kör funktionen newConnection vid varje ny socketanslutning
 io.sockets.on('connection', newConnection);
+console.log("Klar med init");
 
 function newConnection(socket) {
 
@@ -54,12 +59,12 @@ function newConnection(socket) {
 		if (!nameMap.has(name)){
 			nameMap.set(name, socket.id);
 			console.log(socket.id + ' is now called: ' + name);
-			socket.broadcast.to(socket.id).emit('get_name_approved', name);
+			socket.emit('name_approved', name);
 		
-		// Om namnet redan är taget
+		// Om namnet redan är tage
 		}else{
 			console.log(getName(socket.id) + ' did not get the name: ' + name);
-			socket.broadcast.to(socket.id).emit('get_name_denied', name);
+			socket.emit('alert', 'The name: ' + name + ' is already taken. Please choose another name');
 		}
       }
     );
@@ -75,10 +80,10 @@ function newConnection(socket) {
 			socket.join(roomName);
 			roomMap.set(roomName, [socket.id]);
 			console.log(getName(socket.id) + ' successfully created room: ' + roomName);
-			socket.broadcast.to(socket.id).emit('create_room_approved', {roomName: roomName});
+			socket.emit('alert', 'The room: ' + roomName + ' is yours');
 		}else{
 			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');		
-			io.emit('alert', roomName);
+			socket.emit('alert', 'The room: ' + roomName + ' already exists. Please choose another name');
 		}
       }
     );
