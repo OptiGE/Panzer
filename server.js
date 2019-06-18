@@ -56,15 +56,15 @@ function newConnection(socket) {
         console.log(getName(socket.id) + ' tries to get the name: ' + name);
 		
 		// Om namnet inte redan är taget
-		if (!nameMap.has(name)){
+		if (!nameMap.has(socket.id)){
 			
-			nameMap.set(name, socket.id);
+			nameMap.set(socket.id, name);
 			console.log(socket.id + ' is now called: ' + name);
 			socket.emit('name_approved', name);
 		
 		// Om namnet redan är tage
 		}else{
-			console.log(getName(socket.id) + ' did not get the name: ' + name);
+			console.log(socket.id + ' did not get the name: ' + name);
 			socket.emit('alert', 'The name: ' + name + ' is already taken. Please choose another name');
 		}
       }
@@ -75,7 +75,6 @@ function newConnection(socket) {
     socket.on('create_room',
       function(roomName) {
         console.log(getName(socket.id) + ' tries to create the room: ' + roomName);
-		console.log(socket.rooms);
 		
 		//Om rummet inte redan är skapat
 		if (!roomMap.has(roomName)) {
