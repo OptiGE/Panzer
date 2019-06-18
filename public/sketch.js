@@ -47,7 +47,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	loginScene();
+	gameScene();
 	
 	
 }
@@ -129,7 +129,33 @@ function lobbyScene(){
 }
 
 function gameScene(){
+	current_scene = 'game_scene';
 	
+	//Bakgrund
+	image(bg, 0, 0, windowWidth, windowHeight);
+	
+	//Skapa action-knappar
+	btn_stop = createSprite(0, 0, 200, 200);
+	addActionButton(btn_stop, -18, 'assets/btn_stop_up.png', 'assets/btn_stop_p.png');
+	
+ 	btn_left = createSprite(0, 0, 200, 200);
+	addActionButton(btn_left, -6, 'assets/btn_left_up.png', 'assets/btn_left_p.png');
+	
+	btn_right = createSprite(0, 0, 200, 200);
+	addActionButton(btn_right, 6, 'assets/btn_right_up.png', 'assets/btn_right_p.png');
+	
+	btn_fire = createSprite(0, 0, 200, 200);
+	addActionButton(btn_fire, 18, 'assets/btn_fire_up.png', 'assets/btn_fire_p.png'); 
+	
+	//Knapp-event hanterare
+	/*btn_login.onMousePressed = function() {
+		if(buttons_clickable){
+			$('#loginModal').modal('toggle');
+			console.log("Showing login modal");
+			btn_login.animation.changeFrame(1);
+			buttons_clickable = false;
+		}
+	};*/
 }
 
 
@@ -182,6 +208,20 @@ function addStdButton(btn, heightOffset, img1, img2){
 	console.log(btn.height);
 }
 
+function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton, fast med position i sidled istället
+	btn.addAnimation('standard', img1, img2);
+	btn.animation.playing = false;
+	if (windowHeight > windowWidth){
+		btn.scale = windowWidth / (5*200); //scale sätts så att knappens bredd om 200 översätts till 1/5 av skärmen
+	} else 
+		btn.scale = windowHeight / (7*200);
+
+	btn.mouseActive = true;
+	btn.position.x = (windowWidth / 2) + btnPosition * windowWidth / 50;
+	btn.position.y = windowHeight*0.943;//windowHeight - 38; //- windowWidth / 25;  
+	console.log(btn.height);
+}
+
 function mouseReleased() {
 	if(current_scene == 'login_scene'){
 		btn_login.animation.changeFrame(0);
@@ -190,3 +230,14 @@ function mouseReleased() {
 		btn_createroom.animation.changeFrame(0);
 	}
 }
+
+
+
+
+function placeraKnapp(x, knappbredd){
+	placera(x*knappbredd)
+}
+
+
+
+
