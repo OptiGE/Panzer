@@ -1,0 +1,9 @@
+
+
+----- Klient / front end -----
+Gör en nextScene() funktion inom varje Scene som både städar ur den och startar nästa. 
+
+
+
+
+----- Server / back end -----

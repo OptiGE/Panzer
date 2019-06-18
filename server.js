@@ -82,6 +82,7 @@ function newConnection(socket) {
 			roomMap.set(roomName, [socket.id]);
 			console.log(getName(socket.id) + ' successfully created room: ' + roomName);
 			socket.emit('alert', 'The room: ' + roomName + ' is yours');
+			socket.emit('create_room_approved', roomName);
 		}else{
 			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');		
 			socket.emit('alert', 'The room: ' + roomName + ' already exists. Please choose another name');

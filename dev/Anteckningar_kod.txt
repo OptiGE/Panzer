@@ -6,11 +6,8 @@ Socket rooms ->		https://socket.io/docs/rooms-and-namespaces/
 
 
 Socket meddelandenamn:
-get_name -> _a, _d
-join_room -> _a, _d
-create_room -> _a, _d
+get_name -> _a
+join_room -> _a
+create_room -> _a
 
-
-Använda bootstrap modals för text input. 
-
-bajs
+För denies skickas bara alerts. 
