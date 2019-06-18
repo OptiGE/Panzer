@@ -7,3 +7,4 @@ Gör en nextScene() funktion inom varje Scene som både städar ur den och start
 
 
 ----- Server / back end -----
+Göra det möjligt att lämna ett rum, radera sitt namn och exita cleant.

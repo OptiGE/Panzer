@@ -75,14 +75,26 @@ function newConnection(socket) {
     socket.on('create_room',
       function(roomName) {
         console.log(getName(socket.id) + ' tries to create the room: ' + roomName);
+		console.log(socket.rooms);
+		
 		//Om rummet inte redan är skapat
 		if (!roomMap.has(roomName)) {
-			//Skapa rummet och lägg till personen på rätt ställe
-			socket.join(roomName);
-			roomMap.set(roomName, [socket.id]);
-			console.log(getName(socket.id) + ' successfully created room: ' + roomName);
-			socket.emit('alert', 'The room: ' + roomName + ' is yours');
-			socket.emit('create_room_approved', roomName);
+			
+			//Om användaren inte är med i något rum (utöver sitt egna)
+			if (!(Object.keys(socket.rooms).length > 1)){
+				//Skapa rummet och lägg till personen på rätt ställe
+				socket.join(roomName);
+				roomMap.set(roomName, [socket.id]);
+				console.log(getName(socket.id) + ' successfully created room: ' + roomName);
+				socket.emit('alert', 'The room: ' + roomName + ' is yours');
+				socket.emit('create_room_approved', roomName);
+			//Om användaren redan är i ett rum
+			}else{
+				socket.emit('alert', 'You are already in a room, named ' + Object.keys(socket.rooms)[1]);
+				console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since ' + getName(socket.id) + ' is already in a room ');	
+			}
+			
+		//Om rummet redan är skapat
 		}else{
 			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');		
 			socket.emit('alert', 'The room: ' + roomName + ' already exists. Please choose another name');
