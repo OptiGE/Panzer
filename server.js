@@ -57,6 +57,7 @@ function newConnection(socket) {
 		
 		// Om namnet inte redan är taget
 		if (!nameMap.has(name)){
+			
 			nameMap.set(name, socket.id);
 			console.log(socket.id + ' is now called: ' + name);
 			socket.emit('name_approved', name);

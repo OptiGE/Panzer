@@ -69,7 +69,7 @@ function loginScene(){
 	
 	//Skapa Create room knapp
 	btn_login = createSprite(0, 0, 600, 200);
-	addStdButton(btn_login, 0, 'assets/btn_login_up.png', 'assets/btn_login_p.png');
+	addStdButton(btn_login, -0.4, 'assets/btn_login_up.png', 'assets/btn_login_p.png');
 	
 	//Knapp-event hanterare
 	btn_login.onMousePressed = function() {
@@ -92,7 +92,7 @@ function roomScene(name){
 	//image(title, 0, 0, windowWidth / 1.2, 200);
 	
 	//Sätt spelarens namn som titel
-	fill(0); // Svarta hela streck
+	fill(30, 30, 30); // Svarta hela streck
 	text(name, windowWidth / 2, windowHeight / 3.5); //Kom ihåg att texten är center aligned
 	
 	//Skapa Join room knapp
