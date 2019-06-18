@@ -206,9 +206,7 @@ function gameScene(){
 		
 		
 	 }else if (rq == 2){
-		alert("rq = 2");
 		if (document.getElementById('inputJRoomName').value != ''){
-			alert("Ej tom");
 			socket.emit('join_room', document.getElementById('inputJRoomName').value.toUpperCase());
 		}else{
 			alert("You can't join a room with no name!");

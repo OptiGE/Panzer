@@ -121,7 +121,7 @@ function newConnection(socket) {
 					if (!(Object.keys(socket.rooms).length > 1)){
 						socket.join(roomName);
 						roomMap.set(roomName, [socket.id, roomMap.get(roomName)[0]]); //Lägger ihop den gamla entrien med den nya spelaren
-						socket.emit('alert', "Sucessfully joined the room" + roomName);
+						socket.emit('alert', "Sucessfully joined the room " + roomName);
 						console.log("Room sucessfully joined");
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
