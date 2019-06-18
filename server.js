@@ -53,6 +53,7 @@ function newConnection(socket) {
 	//  --- Försöker få ett namn ---
     socket.on('get_name',
       function(name) {
+		name = name.toUpperCase();
         console.log(getName(socket.id) + ' tries to get the name: ' + name);
 		
 		// Om namnet inte redan är taget
@@ -74,6 +75,7 @@ function newConnection(socket) {
 	//  --- Trying to create a room ---
     socket.on('create_room',
       function(roomName) {
+		roomName = roomName.toUpperCase();
         console.log(getName(socket.id) + ' tries to create the room: ' + roomName);
 		
 		//Om rummet inte redan är skapat
@@ -103,18 +105,32 @@ function newConnection(socket) {
 	
 
 	//  --- Trying to join a room ---
-    socket.on('joinroom',
+    socket.on('join_room',
 		function(roomName) {
-			console.log("Sockets i" + roomName + ": " + io.sockets.clients(roomName));
+			roomName = roomName.toUpperCase();
 			console.log(getName(socket.id) + ' tries to join the room: ' + roomName);
+			console.log(roomMap);
+			console.log("-----");
 			//Kolla om rummet finns
 			if (roomMap.has(roomName)) {
 				//Kolla om rummet har en eller två spelare i sig.
-				if (io.sockets.clients(roomName)) {
+				var numClients = io.sockets.adapter.rooms[roomName].length;
+				console.log(numClients);
+				if (numClients < 2) {
 					//Om användaren inte är med i något rum (utöver sitt egna)
 					if (!(Object.keys(socket.rooms).length > 1)){
+						socket.join(roomName);
+						roomMap.set(roomName, [socket.id, roomMap.get(roomName)[0]]); //Lägger ihop den gamla entrien med den nya spelaren
+						socket.emit('alert', "Sucessfully joined the room " + roomName);
+						console.log("Room sucessfully joined");
+					}else{
+						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
 					}
+				}else{
+					socket.emit('alert', 'Sorry, the room ' + roomName + ' is already full');
 				}
+			}else{
+				socket.emit('alert', 'Sorry, the room ' + roomName + ' does not exist yet');
 			}
         }
     );
