@@ -13,6 +13,9 @@ var current_scene;
 // Typsnittsvariabler
 let font;
 
+// In-gamevariabler
+var actions = [];
+
 function preload() {
   //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
@@ -135,6 +138,7 @@ function gameScene(){
 	image(bg, 0, 0, windowWidth, windowHeight);
 	
 	//Skapa action-knappar
+	
 	btn_stop = createSprite(0, 0, 200, 200);
 	addActionButton(btn_stop, -18, 'assets/btn_stop_up.png', 'assets/btn_stop_p.png');
 	
@@ -149,33 +153,46 @@ function gameScene(){
 	
 	//Skapa actionfield
 	actionfield = createSprite(0, 0, 1000, 300);
-	addStdButton(actionfield, 0, 'assets/actionfield.png', 'assets/actionfield.png');
+	addStdButton(actionfield, 0.8, 'assets/actionfield.png', 'assets/actionfield.png');
 	
 	//Knapp-event hanterare
 	btn_stop.onMousePressed = function() {
 		if(buttons_clickable){
 			btn_stop.animation.changeFrame(1);
 			buttons_clickable = false;
+			if (actions.length <3) {
+				actions.push('stop');//Ändra till actionChosen
+			}
 		}
 	};
 	btn_left.onMousePressed = function() {
 		if(buttons_clickable){
 			btn_left.animation.changeFrame(1);
 			buttons_clickable = false;
+			if (actions.length <3) {
+				actions.push('left');//-ll-
+			}
 		}
 	};
 	btn_right.onMousePressed = function() {
 		if(buttons_clickable){
 			btn_right.animation.changeFrame(1);
 			buttons_clickable = false;
+			if (actions.length <3) {
+				actions.push('right');//-ll-
+			}
 		}
 	};
 	btn_fire.onMousePressed = function() {
 		if(buttons_clickable){
 			btn_fire.animation.changeFrame(1);
 			buttons_clickable = false;
+			if (actions.length <3) {
+				actions.push('fire');//-ll-
+			}
 		}
 	};
+
 }
 
 
@@ -223,7 +240,11 @@ function windowResized() {
 }
 
 function addStdButton(btn, heightOffset, img1, img2){
-	btn.addAnimation('standard', img1, img2);
+	if (img1 != img2) {
+		btn.addAnimation('standard', img1, img2);
+	}else {
+		btn.addAnimation('standard', img1); //Single frame
+	}	
 	btn.animation.playing = false;
 	btn.scale = windowHeight / (7*200); //scale sätts så att knappens höjd om 200 översätts till 1/7 av skärmen
 	btn.mouseActive = true;
@@ -247,6 +268,20 @@ function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton
 
 	btn.mouseActive = true;
 	console.log(btn.height);
+}
+
+function addActionSlot (
+
+function addAction(order, img) {
+	createSprite(((windowHeight+100)/2) + ((0.8*200*(windowHeight/(7*200))*1.3)), (windowWidth*order)/4, 200, 200);'
+	
+}
+
+function actionChosen(x) {
+	if (x == 1) {
+		actions.push('stop');
+		
+	}
 }
 
 function mouseReleased() {
