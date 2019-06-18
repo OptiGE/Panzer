@@ -47,7 +47,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	gameScene();
+	loginScene();
 	
 	
 }
@@ -86,7 +86,7 @@ function loginScene(){
 
 function roomScene(name){
 	
-	current_scene = 'roomScene';
+	current_scene = 'room_scene';
 	
 	image(bg, 0, 0, windowWidth, windowHeight);
 	//image(title, 0, 0, windowWidth / 1.2, 200);
@@ -100,8 +100,8 @@ function roomScene(name){
 	addStdButton(btn_joinroom, 0, 'assets/btn_joinroom_up.png', 'assets/btn_joinroom_p.png');
 	
 	//Skapa Create room knapp
-	//btn_createroom = createSprite(0, 0, 600, 200);
-	//addStdButton(btn_createroom, 1, 'assets/btn_createroom_up.png', 'assets/btn_createroom_p.png');
+	btn_createroom = createSprite(0, 0, 600, 200);
+	addStdButton(btn_createroom, 1, 'assets/btn_createroom_up.png', 'assets/btn_createroom_p.png');
 	
 	//Knapp-event hanterare
 	btn_joinroom.onMousePressed = function() {
@@ -124,9 +124,6 @@ function roomScene(name){
 	
 }
 
-function lobbyScene(){
-	
-}
 
 function gameScene(){
 	current_scene = 'game_scene';
@@ -209,7 +206,9 @@ function gameScene(){
 		
 		
 	 }else if (rq == 2){
+		alert("rq = 2");
 		if (document.getElementById('inputJRoomName').value != ''){
+			alert("Ej tom");
 			socket.emit('join_room', document.getElementById('inputJRoomName').value.toUpperCase());
 		}else{
 			alert("You can't join a room with no name!");
