@@ -34,7 +34,7 @@ function setup() {
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
-	socket = io.connect('http://localhost:3000');
+	socket = io.connect('http://192.168.1.175:3000');
 	socket.on('alert', function(msg){alert(msg);});
 	
 	
@@ -43,6 +43,15 @@ function setup() {
 		btn_login.remove();
 		$('#loginModal').modal('hide');
 		roomScene(name);
+	});
+	
+	
+	// Event hanterare
+	socket.on('join_room_approved', function(name){
+		btn_joinroom.remove();
+		btn_createroom.remove();
+		$('#loginModal').modal('hide');
+		gameScene();
 	});
 	
 	
@@ -267,19 +276,19 @@ function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton
 	console.log(btn.height);
 }
 
-function addActionSlot (
+//function addActionSlot (
 
-function addAction(order, img) {
+/* function addAction(order, img) {
 	createSprite(((windowHeight+100)/2) + ((0.8*200*(windowHeight/(7*200))*1.3)), (windowWidth*order)/4, 200, 200);'
 	
-}
+} */
 
-function actionChosen(x) {
+/* function actionChosen(x) {
 	if (x == 1) {
 		actions.push('stop');
 		
 	}
-}
+} */
 
 function mouseReleased() {
 	if(current_scene == 'login_scene'){
