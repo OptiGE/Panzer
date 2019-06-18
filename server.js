@@ -62,7 +62,7 @@ function newConnection(socket) {
 			console.log(socket.id + ' is now called: ' + name);
 			socket.emit('name_approved', name);
 		
-		// Om namnet redan är tage
+		// Om namnet redan är taget
 		}else{
 			console.log(socket.id + ' did not get the name: ' + name);
 			socket.emit('alert', 'The name: ' + name + ' is already taken. Please choose another name');
@@ -104,11 +104,19 @@ function newConnection(socket) {
 
 	//  --- Trying to join a room ---
     socket.on('joinroom',
-      function(roomName) {
-        console.log(getName(socket.id) + ' tries to join the room: ' + roomName);
-		//Kolla om rummet finns
-			//Kolla om rummet har en eller två spelare i sig.
-      }
+		function(roomName) {
+			console.log("Sockets i" + roomName + ": " + io.sockets.clients(roomName));
+			console.log(getName(socket.id) + ' tries to join the room: ' + roomName);
+			//Kolla om rummet finns
+			if (roomMap.has(roomName)) {
+				//Kolla om rummet har en eller två spelare i sig.
+				if (io.sockets.clients(roomName)) {
+					//Om användaren inte är med i något rum (utöver sitt egna)
+					if (!(Object.keys(socket.rooms).length > 1)){
+					}
+				}
+			}
+        }
     );
 
 
