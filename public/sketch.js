@@ -100,8 +100,8 @@ function roomScene(name){
 	addStdButton(btn_joinroom, 0, 'assets/btn_joinroom_up.png', 'assets/btn_joinroom_p.png');
 	
 	//Skapa Create room knapp
-	btn_createroom = createSprite(0, 0, 600, 200);
-	addStdButton(btn_createroom, 1, 'assets/btn_createroom_up.png', 'assets/btn_createroom_p.png');
+	//btn_createroom = createSprite(0, 0, 600, 200);
+	//addStdButton(btn_createroom, 1, 'assets/btn_createroom_up.png', 'assets/btn_createroom_p.png');
 	
 	//Knapp-event hanterare
 	btn_joinroom.onMousePressed = function() {
@@ -147,15 +147,35 @@ function gameScene(){
 	btn_fire = createSprite(0, 0, 200, 200);
 	addActionButton(btn_fire, 18, 'assets/btn_fire_up.png', 'assets/btn_fire_p.png'); 
 	
+	//Skapa actionfield
+	actionfield = createSprite(0, 0, 1000, 300);
+	addStdButton(actionfield, 0, 'assets/actionfield.png', 'assets/actionfield.png');
+	
 	//Knapp-event hanterare
-	/*btn_login.onMousePressed = function() {
+	btn_stop.onMousePressed = function() {
 		if(buttons_clickable){
-			$('#loginModal').modal('toggle');
-			console.log("Showing login modal");
-			btn_login.animation.changeFrame(1);
+			btn_stop.animation.changeFrame(1);
 			buttons_clickable = false;
 		}
-	};*/
+	};
+	btn_left.onMousePressed = function() {
+		if(buttons_clickable){
+			btn_left.animation.changeFrame(1);
+			buttons_clickable = false;
+		}
+	};
+	btn_right.onMousePressed = function() {
+		if(buttons_clickable){
+			btn_right.animation.changeFrame(1);
+			buttons_clickable = false;
+		}
+	};
+	btn_fire.onMousePressed = function() {
+		if(buttons_clickable){
+			btn_fire.animation.changeFrame(1);
+			buttons_clickable = false;
+		}
+	};
 }
 
 
@@ -213,30 +233,34 @@ function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton
 	btn.animation.playing = false;
 	if (windowHeight > windowWidth){
 		btn.scale = windowWidth / (5*200); //scale sätts så att knappens bredd om 200 översätts till 1/5 av skärmen
-	} else 
+		btn.position.x = (windowWidth / 2) + btnPosition * windowWidth / 50;
+		btn.position.y = windowHeight - (windowWidth*0.14);
+	} else {
 		btn.scale = windowHeight / (7*200);
+		btn.position.x = (windowWidth / 2) + btnPosition * windowWidth / 50;
+		btn.position.y = windowHeight*0.88;
+	}		
 
 	btn.mouseActive = true;
-	btn.position.x = (windowWidth / 2) + btnPosition * windowWidth / 50;
-	btn.position.y = windowHeight*0.943;//windowHeight - 38; //- windowWidth / 25;  
 	console.log(btn.height);
 }
 
 function mouseReleased() {
 	if(current_scene == 'login_scene'){
 		btn_login.animation.changeFrame(0);
-	}else{
+	}else if (current_scene == 'room_scene'){		
 		btn_joinroom.animation.changeFrame(0);
 		btn_createroom.animation.changeFrame(0);
+	}else if (current_scene == 'game_scene'){
+		btn_stop.animation.changeFrame(0);
+		btn_left.animation.changeFrame(0);
+		btn_right.animation.changeFrame(0);
+		btn_fire.animation.changeFrame(0);
+		buttons_clickable = true;
 	}
 }
 
 
-
-
-function placeraKnapp(x, knappbredd){
-	placera(x*knappbredd)
-}
 
 
 
