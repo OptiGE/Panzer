@@ -1,4 +1,4 @@
-
+﻿
 
 ----- Klient / front end -----
 Gör en nextScene() funktion inom varje Scene som både städar ur den och startar nästa. 
@@ -11,3 +11,6 @@ Gör en nextScene() funktion inom varje Scene som både städar ur den och start
 
 * Hantera nicknames på det här viset istället: https://stackoverflow.com/questions/6563885/socket-io-how-do-i-get-a-list-of-connected-sockets-clients
   Såhär: socket.set('nickname', "Birger");
+
+* En prettyprintfunktion för rum. Eftersom roomMap bara har socket.id i form av strings
+  är det svårt att extrahera socket.nickname ur det. io.sockets.connected[socketId] bör funka

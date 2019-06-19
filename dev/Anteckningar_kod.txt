@@ -11,3 +11,13 @@ join_room -> _a
 create_room -> _a
 
 För denies skickas bara alerts. 
+
+
+
+array.a = 'foo';
+array['a'] = 'foo'; //Är a:et här det numeriska ASCII-värdet?
+//Detta är tydligen att lägga till .a till arrayobjektet, och inte att lägga till det i arrayen
+//Detta eftersom praktiskt taget allt i javascript är objekt
+
+var obj = {};
+obj['a'] = 'foo';
