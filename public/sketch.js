@@ -35,7 +35,7 @@ function setup() {
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
-	socket = io.connect('http://localhost:3000');
+	socket = io.connect('http://192.168.1.175:3000');
 	socket.on('alert', function(msg){alert(msg);});
 	
 	
