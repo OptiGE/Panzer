@@ -85,7 +85,7 @@ function newConnection(socket) {
 				roomMap.set(roomName, [socket.id]);
 				console.log(socket.nickname + ' successfully created room: ' + roomName);
 				socket.emit('alert', 'The room: ' + roomName + ' is yours');
-				socket.emit('join_room_approved', roomName);
+				socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
 			//Om användaren redan är i ett rum
 			}else{
 				socket.emit('alert', 'You are already in a room, named ' + Object.keys(socket.rooms)[1]);
@@ -120,7 +120,11 @@ function newConnection(socket) {
 						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id]); //Lägger ihop den gamla entrien med den nya spelaren
 						socket.emit('alert', "Sucessfully joined the room " + roomName);
 						console.log("Room sucessfully joined");
-						socket.emit('join_room_approved', roomName);
+						socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
+						//Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
+						socket.to(roomName).emit('p2_joined', socket.nickname);
+						//Skicka den som redan är i rummets namn till joinaren 
+						socket.emit('p2_joined', roomMap.get(roomName)[0]);
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
 					}

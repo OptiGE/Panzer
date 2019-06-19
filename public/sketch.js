@@ -46,13 +46,17 @@ function setup() {
 		roomScene(name);
 	});
 	
-	
-	// Event hanterare
-	socket.on('join_room_approved', function(name){
+	socket.on('join_room_approved', function(room){
+		alert("Room object is: " + room);
 		btn_joinroom.remove();
 		btn_createroom.remove();
 		$('#loginModal').modal('hide');
-		gameScene();
+		gameScene(room.name, room.p1_nick);
+	});
+	
+	socket.on('p2_joined', function(name){
+		textAlign(LEFT);
+		text(name, windowHeight / 25, windowHeight / 12);
 	});
 	
 	
@@ -93,7 +97,6 @@ function loginScene(){
 			buttons_clickable = false;
 		}
 	};
-	
 }
 
 
@@ -138,12 +141,25 @@ function roomScene(name){
 }
 
 
-function gameScene(){
+function gameScene(roomName, p1_nick){
 	current_scene = 'game_scene';
+	console.log(roomName + " " + p1_nick);
 	
 	//Bakgrund
 	image(bg, 0, 0, windowWidth, windowHeight);
 	
+	//Nya regler för text, inte som de som skapades i setup()
+	textSize(windowHeight / 25);
+	fill(30, 30, 30);
+	
+	//Skriv ut rumsnamnet i mitten
+	textAlign(CENTER);
+	text(roomName, windowWidth / 2, windowHeight / 25);
+	
+	//Skriv ut P1 i det övre vänstra hörnet
+	textAlign(LEFT);
+	text(p1_nick, windowHeight / 25, windowHeight / 25);
+
 	
 	
 	//Skapa action-knappar
