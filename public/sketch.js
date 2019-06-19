@@ -14,7 +14,8 @@ var current_scene;
 let font;
 
 // In-gamevariabler
-var actions = [];
+var actionArray;
+var slotArray;
 
 function preload() {
   //Ladda in non-sprite assets
@@ -143,6 +144,8 @@ function gameScene(){
 	//Bakgrund
 	image(bg, 0, 0, windowWidth, windowHeight);
 	
+	
+	
 	//Skapa action-knappar
 	
 	btn_stop = createSprite(0, 0, 200, 200);
@@ -163,21 +166,24 @@ function gameScene(){
 	
 	//Skapa actionslots
 	slot_1 = createSprite(0, 0, 200, 200);
-	addActionSlot(slot_1, -1, 'assets/btn_fire_up.png');
+	addActionSlot(slot_1, -1, 'assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png');
 	
 	slot_2 = createSprite(0, 0, 200, 200);
-	addActionSlot(slot_2, 0, 'assets/btn_fire_up.png');
+	addActionSlot(slot_2, 0, 'assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png');
 	
 	slot_3 = createSprite(0, 0, 200, 200);
-	addActionSlot(slot_3, 1, 'assets/btn_fire_up.png');
+	addActionSlot(slot_3, 1, 'assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png');
+	
+	slotArray = [slot_1, slot_2, slot_3];
+	actionArray = [0, 0, 0];
 	
 	//Knapp-event hanterare
 	btn_stop.onMousePressed = function() {
 		if(buttons_clickable){
 			btn_stop.animation.changeFrame(1);
 			buttons_clickable = false;
-			if (actions.length <3) {
-				actions.push('stop');//Ändra till actionChosen
+			if (actionArray.includes(0)) {
+				actionChosen(1);
 			}
 		}
 	};
@@ -185,8 +191,8 @@ function gameScene(){
 		if(buttons_clickable){
 			btn_left.animation.changeFrame(1);
 			buttons_clickable = false;
-			if (actions.length <3) {
-				actions.push('left');//-ll-
+			if (actionArray.includes(0)) {
+				actionChosen(2);
 			}
 		}
 	};
@@ -194,8 +200,8 @@ function gameScene(){
 		if(buttons_clickable){
 			btn_right.animation.changeFrame(1);
 			buttons_clickable = false;
-			if (actions.length <3) {
-				actions.push('right');//-ll-
+			if (actionArray.includes(0)) {
+				actionChosen(3);
 			}
 		}
 	};
@@ -203,8 +209,8 @@ function gameScene(){
 		if(buttons_clickable){
 			btn_fire.animation.changeFrame(1);
 			buttons_clickable = false;
-			if (actions.length <3) {
-				actions.push('fire');//-ll-
+			if (actionArray.includes(0)) {
+				actionChosen(4);
 			}
 		}
 	};
@@ -292,8 +298,8 @@ function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton
 	console.log(btn.height);
 }
 
-function addActionSlot (slot, slotPosition, img){
-	slot.addAnimation('standard', img);
+function addActionSlot (slot, slotPosition, img0, img1, img2, img3, img4){
+	slot.addAnimation('standard', img0, img1, img2, img3, img4);
 	slot.animation.playing = false;
 	slot.scale = actionfield.scale; //scale sätts så att knappens bredd om 200 översätts till 1/5 av skärmen
 	slot.position.x = (windowWidth / 2) + slotPosition * 1000*actionfield.scale / 3;
@@ -302,11 +308,12 @@ function addActionSlot (slot, slotPosition, img){
 	console.log(slot.height);
 }
 
-function actionChosen(x) {
-	if (x == 1) {
-		actions.push('stop');
-		
+function actionChosen(frameNr) { 
+	actionArray[actionArray.findIndex(k => k == 0)] = frameNr;
+	for (i=0; i<slotArray.length; i++) {
+		slotArray[i].animation.changeFrame(actionArray[i]);
 	}
+	console.log(actionArray);
 }
 
 function mouseReleased() {
