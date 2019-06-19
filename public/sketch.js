@@ -59,7 +59,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	loginScene();
+	gameScene();
 	
 	
 }
@@ -159,7 +159,17 @@ function gameScene(){
 	
 	//Skapa actionfield
 	actionfield = createSprite(0, 0, 1000, 300);
-	addStdButton(actionfield, 0.8, 'assets/actionfield.png', 'assets/actionfield.png');
+	placeActionfield(actionfield, 'assets/actionfield.png'); 
+	
+	//Skapa actionslots
+	slot_1 = createSprite(0, 0, 200, 200);
+	addActionSlot(slot_1, -1, 'assets/btn_fire_up.png');
+	
+	slot_2 = createSprite(0, 0, 200, 200);
+	addActionSlot(slot_2, 0, 'assets/btn_fire_up.png');
+	
+	slot_3 = createSprite(0, 0, 200, 200);
+	addActionSlot(slot_3, 1, 'assets/btn_fire_up.png');
 	
 	//Knapp-event hanterare
 	btn_stop.onMousePressed = function() {
@@ -246,16 +256,22 @@ function windowResized() {
 }
 
 function addStdButton(btn, heightOffset, img1, img2){
-	if (img1 != img2) {
-		btn.addAnimation('standard', img1, img2);
-	}else {
-		btn.addAnimation('standard', img1); //Single frame
-	}	
+	btn.addAnimation('standard', img1, img2);
 	btn.animation.playing = false;
 	btn.scale = windowHeight / (7*200); //scale sätts så att knappens höjd om 200 översätts till 1/7 av skärmen
 	btn.mouseActive = true;
 	btn.position.x = ((windowWidth) / 2);
 	btn.position.y = ((windowHeight + 100) / 2) + ((heightOffset * 200*btn.scale)*1.3);
+	console.log(btn.height);
+}
+
+function placeActionfield(btn, img1){
+	btn.addAnimation('standard', img1); //Single frame
+	btn.animation.playing = false;
+	btn.scale = windowHeight / (7*300); //scale sätts så att knappens höjd om 200 översätts till 1/7 av skärmen
+	btn.mouseActive = true;
+	btn.position.x = ((windowWidth) / 2);
+	btn.position.y = windowHeight - (windowHeight - btn_stop.position.y) - btn.scale*300*1.3;
 	console.log(btn.height);
 }
 
@@ -276,19 +292,22 @@ function addActionButton(btn, btnPosition, img1, img2){ //Samma som addStdButton
 	console.log(btn.height);
 }
 
-//function addActionSlot (
+function addActionSlot (slot, slotPosition, img){
+	slot.addAnimation('standard', img);
+	slot.animation.playing = false;
+	slot.scale = actionfield.scale; //scale sätts så att knappens bredd om 200 översätts till 1/5 av skärmen
+	slot.position.x = (windowWidth / 2) + slotPosition * 1000*actionfield.scale / 3;
+	slot.position.y = actionfield.position.y;
+	slot.mouseActive = true;
+	console.log(slot.height);
+}
 
-/* function addAction(order, img) {
-	createSprite(((windowHeight+100)/2) + ((0.8*200*(windowHeight/(7*200))*1.3)), (windowWidth*order)/4, 200, 200);'
-	
-} */
-
-/* function actionChosen(x) {
+function actionChosen(x) {
 	if (x == 1) {
 		actions.push('stop');
 		
 	}
-} */
+}
 
 function mouseReleased() {
 	if(current_scene == 'login_scene'){
@@ -304,9 +323,3 @@ function mouseReleased() {
 		buttons_clickable = true;
 	}
 }
-
-
-
-
-
-
