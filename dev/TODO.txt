@@ -14,3 +14,5 @@ Gör en nextScene() funktion inom varje Scene som både städar ur den och start
 
 * En prettyprintfunktion för rum. Eftersom roomMap bara har socket.id i form av strings
   är det svårt att extrahera socket.nickname ur det. io.sockets.connected[socketId] bör funka
+  just nu är socket.nickname = 'undefined' om den inte har tilldelats ett nick, istället för 
+  att bara vara socket.id 
