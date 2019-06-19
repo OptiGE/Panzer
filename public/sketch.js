@@ -224,9 +224,33 @@ function gameScene(roomName, p1_nick){
 		if(buttons_clickable){
 			btn_fire.animation.changeFrame(1);
 			buttons_clickable = false;
-			if (actionArray.includes(0)) {
+			if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 1 || actionArray.includes(4)) {
+				alert('bajs');
+			} else if (actionArray.includes(0)) {
 				actionChosen(4);
+				actionChosen(1);
 			}
+		}
+	};
+	slot_1.onMousePressed = function() {
+		if (buttons_clickable) {
+			buttons_clickable = false;
+			slot_1.animation.changeFrame(0);
+			actionArray[0] = 0;
+		}
+	};
+	slot_2.onMousePressed = function() {
+		if (buttons_clickable) {
+			buttons_clickable = false;
+			slot_2.animation.changeFrame(0);
+			actionArray[1] = 0;
+		}
+	};
+	slot_3.onMousePressed = function() {
+		if (buttons_clickable) {
+			buttons_clickable = false;
+			slot_3.animation.changeFrame(0);
+			actionArray[2] = 0;
 		}
 	};
 
