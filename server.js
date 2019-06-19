@@ -21,10 +21,10 @@ var server = app.listen(3000, started);
 
 // Skriv ut information när servern startar
 function started() {
-  var host = server.address().address;
-  var port = server.address().port;
-  console.log('Servern kör på '+ host + port);
-  console.log(" - - - - ");
+	var host = server.address().address;
+	var port = server.address().port;
+	console.log('Servern kör på '+ host + port);
+	console.log(" - - - - ");
 	console.log(" - - -");
 	console.log(" - - ");
 	console.log(" - ");
@@ -118,13 +118,13 @@ function newConnection(socket) {
 					if (!(Object.keys(socket.rooms).length > 1)){
 						socket.join(roomName);
 						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id]); //Lägger ihop den gamla entrien med den nya spelaren
-						socket.emit('alert', "Sucessfully joined the room " + roomName);
 						console.log("Room sucessfully joined");
 						socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
 						//Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
 						socket.to(roomName).emit('p2_joined', socket.nickname);
-						//Skicka den som redan är i rummets namn till joinaren 
-						socket.emit('p2_joined', roomMap.get(roomName)[0]);
+						//Skicka den som redan är i rummets namn till joinaren
+						var inRoomSocket = roomMap.get(roomName)[0];
+						socket.emit('p2_joined', io.sockets.sockets[inRoomSocket].nickname);
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
 					}

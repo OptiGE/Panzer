@@ -35,7 +35,7 @@ function setup() {
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
-	socket = io.connect('http://192.168.1.175:3000');
+	socket = io.connect('http://localhost:3000');
 	socket.on('alert', function(msg){alert(msg);});
 	
 	
@@ -47,7 +47,6 @@ function setup() {
 	});
 	
 	socket.on('join_room_approved', function(room){
-		alert("Room object is: " + room);
 		btn_joinroom.remove();
 		btn_createroom.remove();
 		$('#loginModal').modal('hide');
@@ -55,8 +54,8 @@ function setup() {
 	});
 	
 	socket.on('p2_joined', function(name){
-		textAlign(LEFT);
-		text(name, windowHeight / 25, windowHeight / 12);
+		textAlign(RIGHT);
+		text(name, windowWidth - (windowHeight / 25), windowHeight / 10);
 	});
 	
 	
@@ -64,7 +63,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	gameScene();
+	loginScene();
 	
 	
 }
@@ -149,16 +148,16 @@ function gameScene(roomName, p1_nick){
 	image(bg, 0, 0, windowWidth, windowHeight);
 	
 	//Nya regler för text, inte som de som skapades i setup()
-	textSize(windowHeight / 25);
+	textSize(min((windowHeight / 25), (windowWidth / 15)));
 	fill(30, 30, 30);
 	
 	//Skriv ut rumsnamnet i mitten
 	textAlign(CENTER);
 	text(roomName, windowWidth / 2, windowHeight / 25);
 	
-	//Skriv ut P1 i det övre vänstra hörnet
+	//Skriv ut P1 i det övre vänstra hörnet (p2 skrivs ut i socket.on(p2_join))
 	textAlign(LEFT);
-	text(p1_nick, windowHeight / 25, windowHeight / 25);
+	text(p1_nick, windowHeight / 25, windowHeight / 10);
 
 	
 	
