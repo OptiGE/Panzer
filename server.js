@@ -54,19 +54,16 @@ function newConnection(socket) {
     socket.on('get_name',
       function(name) {
 		name = name.toUpperCase();
-        console.log(getName(socket.id) + ' tries to get the name: ' + name);
-		
-		// Om namnet inte redan är taget
-		if (!nameMap.has(socket.id)){
-			
-			nameMap.set(socket.id, name);
-			console.log(socket.id + ' is now called: ' + name);
+		console.log(socket.id + ' tries to get the name: ' + name);
+		if (name.length < 9){
+			socket.nickname = name;
 			socket.emit('name_approved', name);
-		
-		// Om namnet redan är taget
+			console.log(socket.id + "is now called: " + socket.nickname);
+			//Just nu finns inget som kollar om namnet redan finns, eftersom att samma
+			//användarnamn på flera sockets inte är ett problem. Annars, skapa bara en map eller ett objekt
 		}else{
-			console.log(socket.id + ' did not get the name: ' + name);
-			socket.emit('alert', 'The name: ' + name + ' is already taken. Please choose another name');
+			socket.emit('alert', 'The name: ' + name + ' is must be 8 characters or less');
+			console.log('But the name was too long, at ' + name.length + ' characters');
 		}
       }
     );
@@ -76,7 +73,7 @@ function newConnection(socket) {
     socket.on('create_room',
       function(roomName) {
 		roomName = roomName.toUpperCase();
-        console.log(getName(socket.id) + ' tries to create the room: ' + roomName);
+        console.log(socket.nickname + ' tries to create the room: ' + roomName);
 		
 		//Om rummet inte redan är skapat
 		if (!roomMap.has(roomName)) {
@@ -86,18 +83,18 @@ function newConnection(socket) {
 				//Skapa rummet och lägg till personen på rätt ställe
 				socket.join(roomName);
 				roomMap.set(roomName, [socket.id]);
-				console.log(getName(socket.id) + ' successfully created room: ' + roomName);
+				console.log(socket.nickname + ' successfully created room: ' + roomName);
 				socket.emit('alert', 'The room: ' + roomName + ' is yours');
 				socket.emit('join_room_approved', roomName);
 			//Om användaren redan är i ett rum
 			}else{
 				socket.emit('alert', 'You are already in a room, named ' + Object.keys(socket.rooms)[1]);
-				console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since ' + getName(socket.id) + ' is already in a room ');	
+				console.log(socket.nickname + ' failed to create room: ' + roomName + ' since ' + socket.nickname + ' is already in a room ');	
 			}
 			
 		//Om rummet redan är skapat
 		}else{
-			console.log(getName(socket.id) + ' failed to create room: ' + roomName + ' since it already existed');		
+			console.log(socket.nickname + ' failed to create room: ' + roomName + ' since it already existed');		
 			socket.emit('alert', 'The room: ' + roomName + ' already exists. Please choose another name');
 		}
       }
@@ -108,7 +105,7 @@ function newConnection(socket) {
     socket.on('join_room',
 		function(roomName) {
 			roomName = roomName.toUpperCase();
-			console.log(getName(socket.id) + ' tries to join the room: ' + roomName);
+			console.log(socket.nickname + ' tries to join the room: ' + roomName);
 			console.log(roomMap);
 			console.log("-----");
 			//Kolla om rummet finns
@@ -120,7 +117,7 @@ function newConnection(socket) {
 					//Om användaren inte är med i något rum (utöver sitt egna)
 					if (!(Object.keys(socket.rooms).length > 1)){
 						socket.join(roomName);
-						roomMap.set(roomName, [socket.id, roomMap.get(roomName)[0]]); //Lägger ihop den gamla entrien med den nya spelaren
+						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id]); //Lägger ihop den gamla entrien med den nya spelaren
 						socket.emit('alert', "Sucessfully joined the room " + roomName);
 						console.log("Room sucessfully joined");
 						socket.emit('join_room_approved', roomName);
@@ -148,14 +145,3 @@ function newConnection(socket) {
 // ----------------------------------------------------------------------------
 // ----------------------------- F U N K T I O N E R --------------------------
 // ----------------------------------------------------------------------------
-
-// Funktion för att hämnta det spelarnamn som hör till en socket.
-// Om ID:t har ett namn associerat med sig, returnera det. Annars returnera ID
-function getName(id){
-	if(nameMap.has(id)){
-		return nameMap.get(id);
-	}else{
-		return id;
-	}
-}
-  
