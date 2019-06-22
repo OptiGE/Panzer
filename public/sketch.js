@@ -63,7 +63,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	loginScene();
+	gameScene();
 	
 	
 }
@@ -104,11 +104,10 @@ function roomScene(name){
 	current_scene = 'room_scene';
 	
 	image(bg, 0, 0, windowWidth, windowHeight);
-	//image(title, 0, 0, windowWidth / 1.2, 200);
 	
 	//Sätt spelarens namn som titel
-	fill(30, 30, 30); // Svarta hela streck
-	text(name, windowWidth / 2, windowHeight / 3.5); //Kom ihåg att texten är center aligned
+	fill(30, 30, 30);
+	text(name, windowWidth / 2, windowHeight / 3.5); //Center aligned text
 	
 	//Skapa knappar
 	btn_joinroom = newElement('stdButton', 0, 600, 200, ['assets/btn_joinroom_up.png', 'assets/btn_joinroom_p.png']);
@@ -249,7 +248,7 @@ function newElement(type, offset, width, height, imageArray){
 			elem.position.y = windowHeight - (windowHeight - btn_stop.position.y) - elem.scale*300*1.3;
 			break;
 		case 'actionButton':
-			elem.scale = (windowHeight > windowWidth) ? windowWidth / (5*200) : windowWidth / (7*200);
+			elem.scale = (windowHeight > windowWidth) ? windowWidth / (5*200) : windowHeight / (7*200);
 			elem.position.x = (windowWidth / 2) + offset * windowWidth / 50;
 			elem.position.y = (windowHeight > windowWidth) ? (windowHeight - (windowWidth*0.14)) : windowHeight*0.88;
 			break;
