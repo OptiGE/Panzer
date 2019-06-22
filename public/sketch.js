@@ -56,6 +56,7 @@ function setup() {
 	socket.on('p2_joined', function(name){
 		textAlign(RIGHT);
 		text(name, windowWidth - (windowHeight / 25), windowHeight / 10);
+		alert(name + ' just joined the game!');
 	});
 	
 	
@@ -63,7 +64,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	gameScene();
+	loginScene();
 	
 	
 }
