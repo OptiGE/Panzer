@@ -160,15 +160,15 @@ function gameScene(roomName, p1_nick){
 	btn_stop = newElement('actionButton', -18, 200, 200, ['assets/btn_stop_up.png', 'assets/btn_stop_p.png']);
 	btn_left = newElement('actionButton', -6, 200, 200, ['assets/btn_left_up.png', 'assets/btn_left_p.png']);
 	btn_right = newElement('actionButton', 6, 200, 200, ['assets/btn_right_up.png', 'assets/btn_right_p.png']);
-	btn_fire = newElement('actionButton', 18, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png']);
+	btn_fire = newElement('actionButton', 18, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png', 'assets/btn_firelock_p.png']);
 	
 	//Skapa actionfield
 	actionfield = newElement('actionField', 0, 1000, 300, ['assets/actionfield.png']);
 	
 	//Skapa actionslots
-	slot_1 = newElement('actionSlot', -1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
-	slot_2 = newElement('actionSlot', 0, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
-	slot_3 = newElement('actionSlot', 1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
+	slot_1 = newElement('actionSlot', -1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
+	slot_2 = newElement('actionSlot', 0, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
+	slot_3 = newElement('actionSlot', 1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
 	
 	//Actionfield-variabler
 	slotArray = [slot_1, slot_2, slot_3];
@@ -180,9 +180,9 @@ function gameScene(roomName, p1_nick){
 	btn_right.onMousePressed = eventHandler.createActionHandler(3, btn_right);
 	btn_fire.onMousePressed = eventHandler.createFireActionHandler(); //Denna är unik, så inga argument behövs
 
-	slot_1.onMousePressed = eventHandler.createSlotHandler(0, slot_1);
-	slot_2.onMousePressed = eventHandler.createSlotHandler(1, slot_2);
-	slot_3.onMousePressed = eventHandler.createSlotHandler(2, slot_3);
+	slot_1.onMousePressed = eventHandler.createSlotHandler(0);
+	slot_2.onMousePressed = eventHandler.createSlotHandler(1);
+	slot_3.onMousePressed = eventHandler.createSlotHandler(2);
 
 }
 
@@ -283,28 +283,36 @@ var eventHandler = {
 				if(buttons_clickable){
 					btn_fire.animation.changeFrame(1);
 					buttons_clickable = false;
-					if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 1 || actionArray.includes(4)) {
-						alert('Forbidden move');
+					if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 1 || actionArray.includes(4)) { //Nästa objekt i listan är inte stopp || Det finns redan eld
+						btn_fire.animation.changeFrame(2);
 					} else if (actionArray.includes(0)) {
-						actionChosen(4);
-						actionChosen(1);
+						actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
+						actionChosen(4); //Lägg till en eld
+						actionChosen(5); //Lägg ett stopp där
 					}
 				}
 			   }
 	},
 
-	createSlotHandler(i, slot){
+	createSlotHandler(slot){
 		return function(){
-				  if (buttons_clickable) {
+				  if (buttons_clickable && actionArray[slot] != 5) { //Buttonsclickable && man tryckte inte på en grå
+				  
+					if (actionArray[slot] == 4 && slot != 2){ //Tryckte på eld som inte är sist i listan
+						console.log("I'm in");
+						slotArray[slot + 1].animation.changeFrame(0);
+						actionArray[slot + 1] = 0;
+					}
+					
+					//Detta görs alltid
 					buttons_clickable = false;
-					slot.animation.changeFrame(0);
-					actionArray[i] = 0;
+					slotArray[slot].animation.changeFrame(0);
+					actionArray[slot] = 0;
+					
 				  }
-			   }
+			   }		   
 	}
-
 }
-
 
 
 function actionChosen(frameNr) { 
