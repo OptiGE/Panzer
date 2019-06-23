@@ -84,7 +84,6 @@ function newConnection(socket) {
 				socket.join(roomName);
 				roomMap.set(roomName, [socket.id]);
 				console.log(socket.nickname + ' successfully created room: ' + roomName);
-				socket.emit('alert', 'The room: ' + roomName + ' is yours');
 				socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
 			//Om användaren redan är i ett rum
 			}else{
