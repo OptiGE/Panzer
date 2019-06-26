@@ -19,3 +19,18 @@ array['a'] = 'foo'; //Är a:et här det numeriska ASCII-värdet?
 
 var obj = {};
 obj['a'] = 'foo';
+
+-----------------------------------------------------------------------------------
+
+queue = new TinyQueue([{value: 5}, {value: 7}], function (a, b) {
+	return a.value - b.value;
+});
+
+minQueue = new TinyQueue([], comparator);
+
+minQueue.push({room: xgi29gsbt7402, ttl: 20})
+
+
+function comparator(a, b){
+	return a.ttl - b.ttl;1
+}
