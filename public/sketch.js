@@ -17,6 +17,16 @@ let font;
 var actionArray;
 var slotArray;
 
+var gameObj = {
+	this_id: '', //antingen p1 eller p2
+	opponent_id: '', //antingen p1 eller p2
+	this_pos: 1,
+	opponent_pos: 2,
+	this_health: 3,
+	opponent_health: 3,
+	current_player: 0 //0 för denna klient, 1 för motståndaren
+}
+
 function preload() {
   //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
@@ -35,7 +45,7 @@ function setup() {
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
-	socket = io.connect('http://192.168.0.29:3000');
+	socket = io.connect('http://localhost:3000');
 	socket.on('alert', function(msg){alert(msg);});
 	
 	
@@ -171,6 +181,16 @@ function gameScene(roomName, p1_nick){
 	slot_2 = newElement('actionSlot', 0, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
 	slot_3 = newElement('actionSlot', 1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
 	
+	//Doors ÄNDRA STORLEK PÅ SPRITES FÖR HITBOX
+	door_1 = newElement('doorButton', -10, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	door_2 = newElement('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	door_3 = newElement('doorButton', 10, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	
+	//Heart fields
+	field_1 = newElement('heartField', 0, 200, 200, ['assets/heart_field.png']);
+	field_2 = newElement('heartField', 1, 200, 200, ['assets/heart_field.png']);
+	
+	
 	//Actionfield-variabler
 	slotArray = [slot_1, slot_2, slot_3];
 	actionArray = [0, 0, 0];
@@ -257,6 +277,16 @@ function newElement(type, offset, width, height, imageArray){
 			elem.scale = actionfield.scale;
 			elem.position.x = (windowWidth / 2) + offset * 1000 * actionfield.scale / 3;
 			elem.position.y = actionfield.position.y;
+			break;
+		case 'doorButton':
+			elem.scale = actionfield.scale;
+			elem.position.x = (windowWidth / 2) + offset * windowWidth / 50;
+			elem.position.y = actionfield.position.y - 1.5*(elem.scale * 500);
+			break;
+		case 'heartField':
+			elem.scale = windowHeight / (7*500);
+			elem.position.x = offset ? windowHeight / 25 + (elem.scale * 500/2) : windowWidth - (windowHeight / 25 + (elem.scale * 500/2));
+			elem.position.y = (windowHeight / 10) + 1.5 * textSize();
 			break;
 		default:
 			elem.position.x = windowWidth / 2;
