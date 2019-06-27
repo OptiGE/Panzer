@@ -2,11 +2,11 @@
 // ----------------------------- V A R I A B L E R ----------------------------
 // ----------------------------------------------------------------------------
 
-// Karta över alla spelares namn kopplat till deras socketID | key = string, value = string
-var nameMap = new Map();
+var Game = require('./Game');  
 
 // Karta över alla rum och spelarna de är kopplade till | key = string, value = [string, string]
 var roomMap = new Map();
+
 
 // ----------------------------------------------------------------------------
 // ----------------------------- E X P R E S S --------------------------------
@@ -33,6 +33,7 @@ function started() {
 // Ge ut 'public' mappen som statisk förstasida vid get. 
 app.use(express.static('public'));
 
+var myGame = new Game('currentRoom', 'Stockholm', 'Malmö', Math.floor(Math.random() * 2)); //Slumpa 0 eller 1
 
 // ----------------------------------------------------------------------------
 // ----------------------------- S O C K E T S --------------------------------
@@ -50,7 +51,7 @@ function newConnection(socket) {
     console.log("Ny klient ansluten: " + socket.id);
 
 	
-	//  --- Försöker få ett namn ---
+	//                                       --- G E T   N A M E   ---
     socket.on('get_name',
       function(name) {
 		name = name.toUpperCase();
@@ -68,8 +69,7 @@ function newConnection(socket) {
       }
     );
 	
-	
-	//  --- Trying to create a room ---
+	//                                     --- C R E A T E   R O O M  ---
     socket.on('create_room',
       function(roomName) {
 		roomName = roomName.toUpperCase();
@@ -99,8 +99,7 @@ function newConnection(socket) {
       }
     );
 	
-
-	//  --- Trying to join a room ---
+	//                                      --- J O I N   R O O M  ---
     socket.on('join_room',
 		function(roomName) {
 			roomName = roomName.toUpperCase();
@@ -122,8 +121,7 @@ function newConnection(socket) {
 						//Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
 						socket.to(roomName).emit('p2_joined', socket.nickname);
 						//Skicka den som redan är i rummets namn till joinaren
-						var inRoomSocket = roomMap.get(roomName)[0];
-						socket.emit('p2_joined', io.sockets.sockets[inRoomSocket].nickname);
+						socket.emit('p2_joined', io.sockets.sockets[roomMap.get(roomName)[0]].nickname);
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
 					}
@@ -136,15 +134,32 @@ function newConnection(socket) {
         }
     );
 
-
-
-
+	//										--- D I S C O N N E C T ---
     socket.on('disconnect', function() {
       console.log("Client has disconnected");
-	  //KOM IHÅG ATT TA BORT FRÅN NAMEMAP OCH ROOMMAP
+	  //Kom ihåg att ta bort från roomMap vid disconnect
     });
   }
-  
+
 // ----------------------------------------------------------------------------
-// ----------------------------- F U N K T I O N E R --------------------------
+// ----------------------------- A L L M Ä N N A   F U N K T I O N E R  -------
 // ----------------------------------------------------------------------------
+
+function zip(a, b){
+	var c = [];
+	if (a.length != b.length){
+		console.log("VARNING! --- Zipfunktionens inparametrar har olika längd! --- VARNING!");
+		return;
+	}
+	for (var i = 0; i < a.length; i++){
+		c.push(a[i]);
+		c.push(b[i]);
+	}
+	return c;
+}
+
+function other(player){
+	return player ? 1 : 0;
+}
+
+
