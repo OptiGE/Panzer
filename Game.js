@@ -6,6 +6,11 @@ module.exports = class Game {
 		this.current_player = current_player; //true = p1, false = p2
 		this.open_door = 2; // 4 = undefined
 		this.animation_sequence = [];
+		this.game_state = 'pre_game'; //pre_game, picking_door, choosing_sequence, animation_playing, game_over
+	}
+	
+	getCurrentPlayer(){
+		return this.players[current_player];
 	}
 	
 	controlledSequence(sequence){
@@ -114,9 +119,6 @@ module.exports = class Game {
 
 			//Fire
 			case 5:
-				console.log("ARKEBOG");
-				console.log(player);
-				console.log(this.other(player));
 				if (this.players[player].pos + this.players[this.other(player)].pos == 2){ //Om de står mittemot varandra
 					if (this.open_door == this.players[0].pos){ //Om dörren är öppen (baseras på p1)
 						this.players[this.other(player)].health --;
@@ -135,4 +137,5 @@ module.exports = class Game {
 				break;	
 		}
 	}
+
 }
