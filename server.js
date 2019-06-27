@@ -33,8 +33,6 @@ function started() {
 // Ge ut 'public' mappen som statisk förstasida vid get. 
 app.use(express.static('public'));
 
-var myGame = new Game('currentRoom', 'Stockholm', 'Malmö', Math.floor(Math.random() * 2)); //Slumpa 0 eller 1
-
 // ----------------------------------------------------------------------------
 // ----------------------------- S O C K E T S --------------------------------
 // ----------------------------------------------------------------------------
@@ -114,14 +112,23 @@ function newConnection(socket) {
 				if (numClients < 2) {
 					//Om användaren inte är med i något rum (utöver sitt egna)
 					if (!(Object.keys(socket.rooms).length > 1)){
+						
+						//Spelet är skapat!
 						socket.join(roomName);
-						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id]); //Lägger ihop den gamla entrien med den nya spelaren
+						let gameObj = new Game(roomName, io.sockets.sockets[roomMap.get(roomName)[0]].nickname, socket.nickname, getRandomInt(2));
+						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id, gameObj]); //Lägger ihop den gamla entrien med den nya spelaren och deras gemensamma spelobjekt
+						
+						//Låt klienten sätta upp sitt rum
 						console.log("Room sucessfully joined");
 						socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
-						//Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
-						socket.to(roomName).emit('p2_joined', socket.nickname);
-						//Skicka den som redan är i rummets namn till joinaren
-						socket.emit('p2_joined', io.sockets.sockets[roomMap.get(roomName)[0]].nickname);
+						
+						//Ge medlemmarna varandras namn
+						socket.to(roomName).emit('p2_joined', socket.nickname); //Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
+						socket.emit('p2_joined', io.sockets.sockets[roomMap.get(roomName)[0]].nickname); //Skicka den som redan är i rummets namn till joinaren
+						
+						//Sätt igång spelet!
+						nextMove(roomMap.get(roomName))[2];
+						
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
 					}
@@ -141,6 +148,28 @@ function newConnection(socket) {
     });
   }
 
+// -----------------------------------------------------------------------------------------
+// ----------------------------- S P E L L O G I K ---------------------------------------
+// -----------------------------------------------------------------------------------------
+
+function nextMove(gameObj){
+	
+	//pre_game, picking_door, choosing_sequence, animation_playing, game_over
+	switch (gameObj.game_state){
+		case 'pre_game':	
+			io.in(gameObj.room).emit('pick_door_state', gameObj.getCurrentPlayer().id); //Berätta för alla i rummet vems tur det är
+			gameObj.game_state = 'picking_door';
+			break;
+		case 'picking_door':
+			break;
+		default:
+			break;
+	}
+}
+
+
+
+
 // ----------------------------------------------------------------------------
 // ----------------------------- A L L M Ä N N A   F U N K T I O N E R  -------
 // ----------------------------------------------------------------------------
@@ -158,8 +187,8 @@ function zip(a, b){
 	return c;
 }
 
-function other(player){
-	return player ? 1 : 0;
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 
 
