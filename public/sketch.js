@@ -27,6 +27,33 @@ var gameObj = {
 	current_player: 0 //0 för denna klient, 1 för motståndaren
 }
 
+var myID;
+
+class Panzer {
+	
+	constructor(pos, img1, img2) {
+		this.pos = pos;
+		this.img1 = img1;
+		this.img2 = img2;
+		this.sprite = newElement('panzer', 0, 270, 270, ['assets/tank.png', 'assets/tank_fire.png']);
+	}
+	
+	moveRight() {
+		this.sprite.position.x = this.sprite.position.x + (door_2.position.x - door_1.position.x);
+	}
+	
+	moveLeft() {
+		this.sprite.position.x = this.sprite.position.x - (door_2.position.x - door_1.position.x);
+	}
+	
+	fire() {
+		this.sprite.animation.changeFrame(1);
+		setTimeout(function(bog) {
+		bog.animation.changeFrame(0);
+		}, 300, this.sprite);
+	}
+}
+
 function preload() {
   //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
@@ -67,6 +94,15 @@ function setup() {
 		textAlign(RIGHT);
 		text(name, windowWidth - (windowHeight / 25), windowHeight / 10);
 		alert(name + ' just joined the game!');
+	});
+	
+	socket.on('pick_door_state', function(playerID){
+		if (myID = playerID) {
+			buttons_clickable = true;
+			alert('Your turn!');
+		}else {
+			buttons_clickable = false;
+		}
 	});
 	
 	
@@ -152,7 +188,7 @@ function gameScene(roomName, p1_nick){
 	current_scene = 'game_scene';
 	
 	//Bakgrund
-	image(bg, 0, 0, windowWidth, windowHeight);
+	bg = newElement('background', 0, 800, 600, ['assets/sky.png']); //image(bg, 0, 0, windowWidth, windowHeight);
 	
 	//Nya regler för text, inte som de som skapades i setup()
 	textSize(min((windowHeight / 25), (windowWidth / 15)));
@@ -168,42 +204,60 @@ function gameScene(roomName, p1_nick){
 
 
 	//Skapa action-knappar
-	btn_stop = newElement('actionButton', -18, 200, 200, ['assets/btn_stop_up.png', 'assets/btn_stop_p.png']);
-	btn_left = newElement('actionButton', -6, 200, 200, ['assets/btn_left_up.png', 'assets/btn_left_p.png']);
-	btn_right = newElement('actionButton', 6, 200, 200, ['assets/btn_right_up.png', 'assets/btn_right_p.png']);
+	btn_stop = newElement('actionButton', -18, 200, 200, ['assets/btn_stop_up.png', 'assets/btn_stop_p.png', 'assets/btn_stoplock_p.png']);
+	btn_left = newElement('actionButton', -6, 200, 200, ['assets/btn_left_up.png', 'assets/btn_left_p.png', 'assets/btn_leftlock_p.png']);
+	btn_right = newElement('actionButton', 6, 200, 200, ['assets/btn_right_up.png', 'assets/btn_right_p.png', 'assets/btn_rightlock_p.png']);
 	btn_fire = newElement('actionButton', 18, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png', 'assets/btn_firelock_p.png']);
 	
 	//Skapa actionfield
 	actionfield = newElement('actionField', 0, 1000, 300, ['assets/actionfield.png']);
 	
 	//Skapa actionslots
-	slot_1 = newElement('actionSlot', -1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
-	slot_2 = newElement('actionSlot', 0, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
-	slot_3 = newElement('actionSlot', 1, 200, 200, ['assets/btn_null.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png', 'assets/btn_stoplock_up.png']);
-	
-	//Doors ÄNDRA STORLEK PÅ SPRITES FÖR HITBOX
-	door_1 = newElement('doorButton', -10, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
-	door_2 = newElement('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
-	door_3 = newElement('doorButton', 10, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	slot_1 = newElement('actionSlot', -1, 200, 200, ['assets/btn_null.png', 'assets/btn_stopcock_up.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
+	slot_2 = newElement('actionSlot', 0, 200, 200, ['assets/btn_null.png', 'assets/btn_stopcock_up.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
+	slot_3 = newElement('actionSlot', 1, 200, 200, ['assets/btn_null.png', 'assets/btn_stopcock_up.png', 'assets/btn_stop_up.png', 'assets/btn_left_up.png', 'assets/btn_right_up.png', 'assets/btn_fire_up.png']);
 	
 	//Heart fields
 	field_1 = newElement('heartField', 0, 200, 200, ['assets/heart_field.png']);
 	field_2 = newElement('heartField', 1, 200, 200, ['assets/heart_field.png']);
 	
+	//Doors ÄNDRA STORLEK PÅ SPRITES FÖR HITBOX
+	door_1 = newElement('doorButton', -15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	door_2 = newElement('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	door_3 = newElement('doorButton', 15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+	
+	//Hjärtan
+	hearts_p1 = [];
+	hearts_p2 = [];
+	
+	for (i = 1; i <= 3; i++) {
+		hearts_p1.push(newElement('heart', i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
+		hearts_p2.push(newElement('heart', -i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
+	}
+	
+	//Launch-knapp
+	btn_launch = newElement('launchButton', 0, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png']);
+	
+	//Panzer
+	p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');
+	//p1.moveRight();
+	console.log(p1.sprite.position.x);
 	
 	//Actionfield-variabler
 	slotArray = [slot_1, slot_2, slot_3];
 	actionArray = [0, 0, 0];
 	
 	//Knapp-event hanterare
-	btn_stop.onMousePressed = eventHandler.createActionHandler(1, btn_stop);
-	btn_left.onMousePressed = eventHandler.createActionHandler(2, btn_left);
-	btn_right.onMousePressed = eventHandler.createActionHandler(3, btn_right);
+	btn_stop.onMousePressed = eventHandler.createActionHandler(2, btn_stop);
+	btn_left.onMousePressed = eventHandler.createActionHandler(3, btn_left);
+	btn_right.onMousePressed = eventHandler.createActionHandler(4, btn_right);
 	btn_fire.onMousePressed = eventHandler.createFireActionHandler(); //Denna är unik, så inga argument behövs
 
 	slot_1.onMousePressed = eventHandler.createSlotHandler(0);
 	slot_2.onMousePressed = eventHandler.createSlotHandler(1);
 	slot_3.onMousePressed = eventHandler.createSlotHandler(2);
+	
+	btn_launch.onMousePressed = eventHandler.createLaunchHandler();
 
 }
 
@@ -279,14 +333,34 @@ function newElement(type, offset, width, height, imageArray){
 			elem.position.y = actionfield.position.y;
 			break;
 		case 'doorButton':
-			elem.scale = actionfield.scale;
+			elem.scale = btn_stop.scale * 0.7;
 			elem.position.x = (windowWidth / 2) + offset * windowWidth / 50;
-			elem.position.y = actionfield.position.y - 1.5*(elem.scale * 500);
+			elem.position.y = field_1.position.y + ((actionfield.position.y - field_1.position.y)/2)*0.8;
 			break;
 		case 'heartField':
 			elem.scale = windowHeight / (7*500);
-			elem.position.x = offset ? windowHeight / 25 + (elem.scale * 500/2) : windowWidth - (windowHeight / 25 + (elem.scale * 500/2));
+			elem.position.x = offset ? windowHeight / 25 + (elem.scale * 500 / 2) : windowWidth - (windowHeight / 25 + (elem.scale * 500/2));
 			elem.position.y = (windowHeight / 10) + 1.5 * textSize();
+			break;
+		case 'heart':
+			elem.scale = field_1.scale;
+			elem.position.x = (offset < 0) ? field_1.position.x + (offset + 2)*(500*field_1.scale/4) : field_2.position.x + (offset - 2)*(500*field_1.scale/4);
+			elem.position.y = field_1.position.y;
+			break;
+		case 'launchButton':
+			elem.scale = btn_stop.scale;
+			elem.position.x = windowWidth - 200*elem.scale;
+			elem.position.y = actionfield.position.y;
+			break;
+		case 'background':
+			elem.scale = max((windowHeight / 600), (windowWidth / 800));
+			elem.position.x = windowWidth / 2;
+			elem.position.y = windowHeight / 2;
+			break;
+		case 'panzer':
+			elem.scale = door_1.scale*2;
+			elem.position.x = (windowWidth / 2) + (offset - 1)*(door_2.position.x - door_1.position.x);
+			elem.position.y = windowHeight / 2;
 			break;
 		default:
 			elem.position.x = windowWidth / 2;
@@ -304,7 +378,10 @@ var eventHandler = {
 				buttons_clickable = false;
 				if (actionArray.includes(0)) {
 					actionChosen(action);
+					//p1.moveLeft(); //updateHealth(); //test
 				}
+			}else {
+				btn.animation.changeFrame(2);
 			}
 		}
 	},
@@ -314,12 +391,12 @@ var eventHandler = {
 				if(buttons_clickable){
 					btn_fire.animation.changeFrame(1);
 					buttons_clickable = false;
-					if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 1 || actionArray.includes(4)) { //Nästa objekt i listan är inte stopp || Det finns redan eld
+					if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 2 || actionArray.includes(5)) { //Nästa objekt i listan är inte stopp || Det finns redan eld
 						btn_fire.animation.changeFrame(2);
 					} else if (actionArray.includes(0)) {
 						actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
-						actionChosen(4); //Lägg till en eld
-						actionChosen(5); //Lägg ett stopp där
+						actionChosen(5); //Lägg till en eld
+						actionChosen(1); //Lägg ett stopp där
 					}
 				}
 			   }
@@ -327,9 +404,9 @@ var eventHandler = {
 
 	createSlotHandler(slot){
 		return function(){
-				  if (buttons_clickable && actionArray[slot] != 5) { //Buttonsclickable && man tryckte inte på en grå
+				  if (buttons_clickable && actionArray[slot] != 1) { //Buttonsclickable && man tryckte inte på en grå
 				  
-					if (actionArray[slot] == 4 && slot != 2){ //Tryckte på eld som inte är sist i listan
+					if (actionArray[slot] == 5 && slot != 2){ //Tryckte på eld som inte är sist i listan
 						console.log("I'm in");
 						slotArray[slot + 1].animation.changeFrame(0);
 						actionArray[slot + 1] = 0;
@@ -342,6 +419,16 @@ var eventHandler = {
 					
 				  }
 			   }		   
+	},
+	
+	createLaunchHandler(){
+		return function(){
+			if (buttons_clickable){
+				btn_launch.animation.changeFrame(1);
+				buttons_clickable = false;
+				launchSequence();
+			}
+		}
 	}
 }
 
@@ -352,6 +439,51 @@ function actionChosen(frameNr) {
 		slotArray[i].animation.changeFrame(actionArray[i]);
 	}
 	console.log(actionArray);
+}
+
+function updateHealth() {
+	for (i = 0; i < 3; i++){
+		if (i < gameObj.this_health) {
+			hearts_p1[i].animation.changeFrame(0)
+		}else{
+			hearts_p1[i].animation.changeFrame(1);
+		}
+		if (i < gameObj.opponent_health) {
+			hearts_p2[i].animation.changeFrame(0)
+		}else{
+			hearts_p2[i].animation.changeFrame(1);
+		}
+		
+	}
+}
+
+function launchSequence() {
+	setTimeout(function() {
+		launchAction(actionArray[0])
+		}, 300);
+	setTimeout(function() {
+		launchAction(actionArray[1])
+		}, 600);
+	setTimeout(function() {
+		launchAction(actionArray[2])
+		}, 900);
+	
+}
+
+function launchAction(slot) {
+	switch(slot) {
+		case 3:
+			p1.moveLeft();
+			break;
+		case 4:
+			p1.moveRight();
+			break;
+		case 5:
+			p1.fire();
+			break;
+		default:
+			break;
+	}
 }
 
 function mouseReleased() {
@@ -365,6 +497,7 @@ function mouseReleased() {
 		btn_left.animation.changeFrame(0);
 		btn_right.animation.changeFrame(0);
 		btn_fire.animation.changeFrame(0);
+		btn_launch.animation.changeFrame(0);
 		buttons_clickable = true;
 	}
 }
