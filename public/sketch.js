@@ -6,6 +6,7 @@ var btn_joinroom;
 var btn_createroom;
 var btn_login;
 var buttons_clickable = true;
+var all_buttons_up = true;
 
 // Scenvariabler
 var current_scene;
@@ -16,7 +17,16 @@ let font;
 // In-gamevariabler
 var actionArray;
 var slotArray;
+var gameState = 1;
 
+/*	waitingState = 0;
+	pickDoorState = 1;
+	pickSequenceState = 2;
+	animationState = 3;
+	gameOverState = 4;
+
+	*/
+	
 var gameObj = {
 	this_id: '', //antingen p1 eller p2
 	opponent_id: '', //antingen p1 eller p2
@@ -28,6 +38,8 @@ var gameObj = {
 }
 
 var myID;
+var p1_nick = 'undefined';
+var p2_nick = 'undefined';
 
 class Panzer {
 	
@@ -81,6 +93,7 @@ function setup() {
 		btn_login.remove();
 		$('#loginModal').modal('hide');
 		roomScene(name);
+		p1_nick = name;
 	});
 	
 	socket.on('join_room_approved', function(room){
@@ -88,12 +101,15 @@ function setup() {
 		btn_createroom.remove();
 		$('#loginModal').modal('hide');
 		gameScene(room.name, room.p1_nick);
+		gameState = 0;
 	});
 	
 	socket.on('p2_joined', function(name){
-		textAlign(RIGHT);
-		text(name, windowWidth - (windowHeight / 25), windowHeight / 10);
+		/* textAlign(RIGHT);
+		text(name, windowWidth - (windowHeight / 25), windowHeight / 10); */
 		alert(name + ' just joined the game!');
+		gameState = 1;
+		p2_nick = name;
 	});
 	
 	socket.on('pick_door_state', function(playerID){
@@ -103,6 +119,7 @@ function setup() {
 		}else {
 			buttons_clickable = false;
 		}
+		gameState = 1;
 	});
 	
 	
@@ -119,6 +136,14 @@ function setup() {
 
 function draw() {
 	drawSprites();
+	if (current_scene == 'game_scene' && gameState == 0) {
+		textAlign(LEFT);
+		text(p1_nick, windowHeight / 25, windowHeight / 10);
+		if (gameState > 0) {
+			textAlign(RIGHT);
+			text(p2_nick, windowWidth - (windowHeight / 25), windowHeight / 10);
+		}
+	}
 }
 
 
@@ -199,8 +224,8 @@ function gameScene(roomName, p1_nick){
 	text(roomName, windowWidth / 2, windowHeight / 25);
 	
 	//Skriv ut P1 i det övre vänstra hörnet (p2 skrivs ut i socket.on(p2_join))
-	textAlign(LEFT);
-	text(p1_nick, windowHeight / 25, windowHeight / 10);
+	/* textAlign(LEFT);
+	text(p1_nick, windowHeight / 25, windowHeight / 10); */
 
 
 	//Skapa action-knappar
@@ -373,60 +398,80 @@ var eventHandler = {
 
 	createActionHandler(action, btn) {
 		return function() {
-			if(buttons_clickable){
+			if(buttons_clickable && all_buttons_up && actionArray.includes(0)){
 				btn.animation.changeFrame(1);
 				buttons_clickable = false;
+				all_buttons_up = false;
 				if (actionArray.includes(0)) {
 					actionChosen(action);
 					//p1.moveLeft(); //updateHealth(); //test
 				}
-			}else {
+			}else if (!buttons_clickable && all_buttons_up || !actionArray.includes(0) && all_buttons_up) { //fortsätt
 				btn.animation.changeFrame(2);
+				all_buttons_up = false;
+			
+			}else {
+				
 			}
 		}
 	},
 
 	createFireActionHandler() {
 		return function(){
-				if(buttons_clickable){
-					btn_fire.animation.changeFrame(1);
-					buttons_clickable = false;
-					if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 2 || actionArray.includes(5)) { //Nästa objekt i listan är inte stopp || Det finns redan eld
-						btn_fire.animation.changeFrame(2);
-					} else if (actionArray.includes(0)) {
-						actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
-						actionChosen(5); //Lägg till en eld
-						actionChosen(1); //Lägg ett stopp där
-					}
+			if(buttons_clickable && all_buttons_up){
+				btn_fire.animation.changeFrame(1);
+				buttons_clickable = false;
+				all_buttons_up = false;
+				if (actionArray[actionArray.findIndex(k => k == 0) + 1] > 2 || actionArray.includes(5)) { //Nästa objekt i listan är inte stopp || Det finns redan eld
+					btn_fire.animation.changeFrame(2);
+					all_buttons_up = false;
+				} else if (actionArray.includes(0)) {
+					actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
+					actionChosen(5); //Lägg till en eld
+					actionChosen(1); //Lägg ett stopp där
 				}
-			   }
+			}else if (!buttons_clickable && all_buttons_up || !actionArray.includes(0) && all_buttons_up){
+				btn_fire.animation.changeFrame(2);
+				all_buttons_up = false;
+				
+			}else {
+				
+			}
+		}
 	},
 
 	createSlotHandler(slot){
 		return function(){
-				  if (buttons_clickable && actionArray[slot] != 1) { //Buttonsclickable && man tryckte inte på en grå
-				  
-					if (actionArray[slot] == 5 && slot != 2){ //Tryckte på eld som inte är sist i listan
-						console.log("I'm in");
-						slotArray[slot + 1].animation.changeFrame(0);
-						actionArray[slot + 1] = 0;
-					}
-					
-					//Detta görs alltid
-					buttons_clickable = false;
-					slotArray[slot].animation.changeFrame(0);
-					actionArray[slot] = 0;
-					
-				  }
-			   }		   
+			if (buttons_clickable && actionArray[slot] != 1) { //Buttonsclickable && man tryckte inte på en grå
+			  
+				if (actionArray[slot] == 5 && slot != 2){ //Tryckte på eld som inte är sist i listan
+					console.log("I'm in");
+					slotArray[slot + 1].animation.changeFrame(0);
+					actionArray[slot + 1] = 0;
+				}
+				
+				//Detta görs alltid
+				buttons_clickable = false;
+				all_buttons_up = false;
+				slotArray[slot].animation.changeFrame(0);
+				actionArray[slot] = 0;
+				
+			}
+		}		   
 	},
 	
 	createLaunchHandler(){
 		return function(){
-			if (buttons_clickable){
+			if (buttons_clickable && all_buttons_up){
 				btn_launch.animation.changeFrame(1);
 				buttons_clickable = false;
+				all_buttons_up = false;
 				launchSequence();
+			}else if (!buttons_clickable && all_buttons_up) {
+				btn_launch.animation.changeFrame(2);
+				
+			}else {
+				
 			}
 		}
 	}
@@ -499,5 +544,6 @@ function mouseReleased() {
 		btn_fire.animation.changeFrame(0);
 		btn_launch.animation.changeFrame(0);
 		buttons_clickable = true;
+		all_buttons_up = true;
 	}
 }
