@@ -18,6 +18,8 @@ let font;
 var actionArray;
 var slotArray;
 var gameState = 1;
+var	chosenDoorNr = -1;
+
 
 /*	waitingState = 0;
 	pickDoorState = 1;
@@ -40,6 +42,7 @@ var gameObj = {
 var myID;
 var p1_nick = 'undefined';
 var p2_nick = 'undefined';
+var room_name = 'undefined';
 
 class Panzer {
 	
@@ -102,6 +105,7 @@ function setup() {
 		$('#loginModal').modal('hide');
 		gameScene(room.name, room.p1_nick);
 		gameState = 0;
+		room_name = room.name;
 	});
 	
 	socket.on('p2_joined', function(name){
@@ -127,7 +131,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	loginScene();
+	gameScene();
 	
 	
 }
@@ -136,9 +140,11 @@ function setup() {
 
 function draw() {
 	drawSprites();
-	if (current_scene == 'game_scene' && gameState == 0) {
+	if (current_scene == 'game_scene' && gameState >= 0) {
 		textAlign(LEFT);
 		text(p1_nick, windowHeight / 25, windowHeight / 10);
+		textAlign(CENTER);
+		text(room_name, windowWidth / 2, windowHeight / 25);
 		if (gameState > 0) {
 			textAlign(RIGHT);
 			text(p2_nick, windowWidth - (windowHeight / 25), windowHeight / 10);
@@ -220,8 +226,8 @@ function gameScene(roomName, p1_nick){
 	fill(30, 30, 30);
 	
 	//Skriv ut rumsnamnet i mitten
-	textAlign(CENTER);
-	text(roomName, windowWidth / 2, windowHeight / 25);
+	/* textAlign(CENTER);
+	text(roomName, windowWidth / 2, windowHeight / 25); */
 	
 	//Skriv ut P1 i det övre vänstra hörnet (p2 skrivs ut i socket.on(p2_join))
 	/* textAlign(LEFT);
@@ -282,6 +288,10 @@ function gameScene(roomName, p1_nick){
 	slot_2.onMousePressed = eventHandler.createSlotHandler(1);
 	slot_3.onMousePressed = eventHandler.createSlotHandler(2);
 	
+	door_1.onMousePressed = eventHandler.createDoorHandler(0, door_1);
+	door_2.onMousePressed = eventHandler.createDoorHandler(1, door_2);
+	door_3.onMousePressed = eventHandler.createDoorHandler(2, door_3);
+	
 	btn_launch.onMousePressed = eventHandler.createLaunchHandler();
 
 }
@@ -322,6 +332,9 @@ function gameScene(roomName, p1_nick){
 		}else{
 			alert("You can't join a room with no name!");
 		}
+	 }else if (rq == 3){
+		socket.emit('door_chosen', chosenDoorNr); 
+		console.log(chosenDoorNr);
 	 }
 	 
  }
@@ -460,6 +473,18 @@ var eventHandler = {
 		}		   
 	},
 	
+	createDoorHandler(doorNr, door){
+		return function(){
+			if (buttons_clickable && all_buttons_up){
+				deselectDoors();
+				door.animation.changeFrame(1);
+				buttons_clickable = false;
+				all_buttons_up = false;
+				chosenDoorNr = doorNr;
+			}
+		}
+	},
+	
 	createLaunchHandler(){
 		return function(){
 			if (buttons_clickable && all_buttons_up){
@@ -467,6 +492,11 @@ var eventHandler = {
 				buttons_clickable = false;
 				all_buttons_up = false;
 				launchSequence();
+				if (chosenDoorNr != -1){
+					sendRQ(3);
+					deselectDoors();
+				}
+					
 			}else if (!buttons_clickable && all_buttons_up) {
 				btn_launch.animation.changeFrame(2);
 				
@@ -500,6 +530,13 @@ function updateHealth() {
 		}
 		
 	}
+}
+
+function deselectDoors() {
+	door_1.animation.changeFrame(0);
+	door_2.animation.changeFrame(0);
+	door_3.animation.changeFrame(0);
+	chosenDoorNr = -1;
 }
 
 function launchSequence() {
@@ -543,6 +580,7 @@ function mouseReleased() {
 		btn_right.animation.changeFrame(0);
 		btn_fire.animation.changeFrame(0);
 		btn_launch.animation.changeFrame(0);
+		
 		buttons_clickable = true;
 		all_buttons_up = true;
 	}
