@@ -89,7 +89,7 @@ module.exports = class Game {
 			return (player.pos == this.open_door)
 		}else if(player.id == this.players[1].id){
 			//Om spelaren är P2
-			return return (2 - player.pos == this.open_door)
+			return (2 - player.pos == this.open_door)
 		}else{
 			console.log("VARNING! - isAtOpenDoor(player) fick en felaktig spelare: " + player + " - VARNING");
 			return undefined;

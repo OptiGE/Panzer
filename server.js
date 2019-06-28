@@ -152,7 +152,10 @@ function newConnection(socket) {
 	//										--- D O O R   C H O S E N ---
 	socket.on('door_chosen', function(door) {
 		this_room = Object.keys(socket.rooms)[1];
+		console.log(socket.rooms);
+		console.log(this_room);
 		this_game = roomMap.get(this_room)[2];
+		console.log(roomMap.get(this_room) + "-----");
 		
 		if(this_game.game_state != 'pick_door_state'){
 			console.log("Någon försökte välja en dörr i fel state: " + socket.nickname);

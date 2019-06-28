@@ -131,7 +131,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	gameScene();
+	loginScene();
 	
 	
 }
