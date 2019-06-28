@@ -191,7 +191,6 @@ function newConnection(socket) {
 			console.log("Båda spelare har en sekvens i " + this_game.room);
 		}
 		
-		
       }
     );
 	

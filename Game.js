@@ -4,8 +4,7 @@ module.exports = class Game {
 		this.room = room;
 		this.players = [{id: p1_id, health: 3, pos: 1, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 1, sequence: [], animation: []}]
 		this.current_player = current_player; //true = p1, false = p2
-		this.open_door = 2; // 4 = undefined
-		//this.animation_sequence = [];
+		this.open_door = 4; // 4 = undefined
 		this.game_state = 'pre_game'; //pre_game, picking_door, choosing_sequence, animation_playing, game_over
 	}
 	
@@ -72,7 +71,29 @@ module.exports = class Game {
 	}
 	
 	other(player){
-		return player ? 0 : 1;
+		if(player.id == this.players[0].id){
+			//Om spelaren är P1
+			return this.players[1].id;
+		}else if(player.id == this.players[1].id){
+			//Om spelaren är P2
+			return this.players[0].id;
+		}else{
+			console.log("VARNING! - Other(player) fick en felaktig spelare: " + player + " - VARNING");
+			return undefined;
+		}
+	}
+	
+	isAtOpenDoor(player){
+		if(player.id == this.players[0].id){
+			//Om spelaren är P1
+			return (player.pos == this.open_door)
+		}else if(player.id == this.players[1].id){
+			//Om spelaren är P2
+			return return (2 - player.pos == this.open_door)
+		}else{
+			console.log("VARNING! - isAtOpenDoor(player) fick en felaktig spelare: " + player + " - VARNING");
+			return undefined;
+		}
 	}
 	
 	nextPlayer(){
@@ -95,11 +116,11 @@ module.exports = class Game {
 		for(let i = 0; i < 3; i++){
 			//Bestämmer om p1 eller p2 prioriteras
 			if (this.current_player == 0){
-				this.execMove(this.players[0].seq[i], 0);
-				this.execMove(this.players[1].seq[i], 1);
+				this.execMove(this.players[0].seq[i], this.players[0]);
+				this.execMove(this.players[1].seq[i], this.players[1]);
 			}else{                   
-				this.execMove(this.players[1].seq[i], 1);
-				this.execMove(this.players[0].seq, 0);
+				this.execMove(this.players[1].seq[i], this.players[1]);
+				this.execMove(this.players[0].seq[i], this.players[0]);
 			}
 		}
 	}
@@ -110,45 +131,50 @@ module.exports = class Game {
 			
 			//Stop_lock
 			case 1:
-				//this.animation_sequence.push([player, 'stay']);
+				player.animation.push([player, 'stay']);
 				break;
 			
 			//Stop
 			case 2:
-				//this.animation_sequence.push([player, 'stay']);
+				player.animation.push([player, 'stay']);
 				break;
 					
 			//Left	
 			case 3:
-				if (this.players[player].pos > 0){
-					this.players[player].pos --;
-					//this.animation_sequence.push([player, 'move_left']);
+				if (player.pos > 0){
+					player.pos --;
+					player.animation.push([player, 'move_left']);
+					
+					if(isAtOpenDoor(player)){
+						this.other(player).animation.push([]);
+					}
+					
 				}else{
-					//this.animation_sequence.push([player, 'move_left_fail']);
+					player.animation.push([player, 'move_left_fail']);
 				}
 				break;
 				
 			//Right
 			case 4:
-				if (this.players[player].pos < 2){
-					this.players[player].pos ++;
-					this.animation_sequence.push([player, 'move_right']);
+				if (player.pos < 2){
+					player.pos ++;
+					player.animation.push([player, 'move_right']);
 				}else{
-					this.animation_sequence.push([player, 'move_right_fail']);
+					player.animation.push([player, 'move_right_fail']);
 				}
 				break;
 
 			//Fire
 			case 5:
-				if (this.players[player].pos + this.players[this.other(player)].pos == 2){ //Om de står mittemot varandra
+				if (player.pos + this.other(player).pos == 2){ //Om de står mittemot varandra
 					if (this.open_door == this.players[0].pos){ //Om dörren är öppen (baseras på p1)
-						this.players[this.other(player)].health --;
-						this.animation_sequence.push([player, 'fire_hit']);
+						this.other(player).health --;
+						player.animation.push([player, 'fire_hit']);
 					}else{
-						this.animation_sequence.push([player, 'fire_miss1']);
+						player.animation.push([player, 'fire_miss1']);
 					}
 				}else{
-					this.animation_sequence.push([player, 'fire_miss2']);
+					player.animation.push([player, 'fire_miss2']);
 				}
 				break;
 							
