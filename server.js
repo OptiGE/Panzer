@@ -4,7 +4,7 @@
 
 var Game = require('./Game');  
 
-// Karta över alla rum och spelarna de är kopplade till | key = string, value = [string, string]
+// Karta över alla rum och spelarna de är kopplade till | key = string, value = [string, string, obj]
 var roomMap = new Map();
 
 
@@ -147,6 +147,24 @@ function newConnection(socket) {
 	  //Kom ihåg att ta bort från roomMap vid disconnect
     });
   }
+  
+  
+	socket.on('door_chosen', function(door) {
+		this_room = Object.keys(socket.rooms)[1];
+		this_game = roomMap.get(this_room)[2];
+		if (this_game.getCurrentPlayer().id == socket.id){
+			if (door >= 0 && door <= 2){
+				this_game.open_door = door;
+				nextMove(this_game);
+				//Skicka ut infon till alla inblandade här
+			}else{
+				console.log("Dörr index utanför gränsen: " + door);
+			}
+		}else{
+			console.log("VARNING! - Fel användare försökte välja dörr - VARNING!");
+		}
+      }
+    );
 
 // -----------------------------------------------------------------------------------------
 // ----------------------------- S P E L L O G I K ---------------------------------------
@@ -161,6 +179,7 @@ function nextMove(gameObj){
 			gameObj.game_state = 'picking_door';
 			break;
 		case 'picking_door':
+			
 			break;
 		default:
 			break;
