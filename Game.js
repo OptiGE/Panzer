@@ -2,18 +2,34 @@ module.exports = class Game {
 	
 	constructor(room, p1_id, p2_id, current_player){
 		this.room = room;
-		this.players = [{id: p1_id, health: 3, pos: 1, seq: []}, {id: p2_id, health: 3, pos: 1, seq: []}]
+		this.players = [{id: p1_id, health: 3, pos: 1, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 1, sequence: [], animation: []}]
 		this.current_player = current_player; //true = p1, false = p2
 		this.open_door = 2; // 4 = undefined
-		this.animation_sequence = [];
+		//this.animation_sequence = [];
 		this.game_state = 'pre_game'; //pre_game, picking_door, choosing_sequence, animation_playing, game_over
 	}
 	
 	getCurrentPlayer(){
-		return this.players[current_player];
+		return this.players[this.current_player];
+	}
+	
+	getPlayerFromID(id){
+		if (this.players[0].id == id){
+			return this.players[0]; 
+		}else if(this.players[1].id == id){
+			return this.players[1];
+		}else{
+			return undefined;
+		}
 	}
 	
 	controlledSequence(sequence){
+		
+		if(sequence.length != 3){
+			console.log("VARNING! - En sekvens hade fel längd - VARNING!");
+			return [2, 2, 2];
+
+		}
 		
 		var newSequence = [];
 		var numOfFires = 0;
@@ -63,14 +79,19 @@ module.exports = class Game {
 		this.current_player = this.other(current_player);
 	}	
 	
+	//Både räknar ut vad som händer i spelet och fyller player.animation med det den skall visa
 	execSequence(){
 		
 		if(this.players[0].seq.length != 3 || this.players[1].seq.length != 3){
 			console.log("Both players do not have a sequence yet!");
 		}
 		
-		this.animation_sequence = [];
+		//Töm bådas animationer
+		this.players[0].animation = [];
+		this.players[1].animation = [];
 		
+		
+		//Gå igenom de tre movesen vardera klient har valt
 		for(let i = 0; i < 3; i++){
 			//Bestämmer om p1 eller p2 prioriteras
 			if (this.current_player == 0){
@@ -89,21 +110,21 @@ module.exports = class Game {
 			
 			//Stop_lock
 			case 1:
-				this.animation_sequence.push([player, 'stay']);
+				//this.animation_sequence.push([player, 'stay']);
 				break;
 			
 			//Stop
 			case 2:
-				this.animation_sequence.push([player, 'stay']);
+				//this.animation_sequence.push([player, 'stay']);
 				break;
 					
 			//Left	
 			case 3:
 				if (this.players[player].pos > 0){
 					this.players[player].pos --;
-					this.animation_sequence.push([player, 'move_left']);
+					//this.animation_sequence.push([player, 'move_left']);
 				}else{
-					this.animation_sequence.push([player, 'move_left_fail']);
+					//this.animation_sequence.push([player, 'move_left_fail']);
 				}
 				break;
 				

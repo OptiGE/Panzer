@@ -127,7 +127,8 @@ function newConnection(socket) {
 						socket.emit('p2_joined', io.sockets.sockets[roomMap.get(roomName)[0]].nickname); //Skicka den som redan är i rummets namn till joinaren
 						
 						//Sätt igång spelet!
-						nextMove(roomMap.get(roomName))[2];
+						io.in(roomName).emit('pick_door_state', gameObj.getCurrentPlayer().id); //Berätta för alla i rummet vems tur det är
+						gameObj.game_state = 'pick_door_state';
 						
 					}else{
 						socket.emit('alert', 'Sorry, you are already in a room named ' + Object.keys(socket.rooms)[1]);
@@ -146,17 +147,23 @@ function newConnection(socket) {
       console.log("Client has disconnected");
 	  //Kom ihåg att ta bort från roomMap vid disconnect
     });
-  }
   
   
+	//										--- D O O R   C H O S E N ---
 	socket.on('door_chosen', function(door) {
 		this_room = Object.keys(socket.rooms)[1];
 		this_game = roomMap.get(this_room)[2];
+		
+		if(this_game.game_state != 'pick_door_state'){
+			console.log("Någon försökte välja en dörr i fel state: " + socket.nickname);
+			return;
+		}
+		
 		if (this_game.getCurrentPlayer().id == socket.id){
 			if (door >= 0 && door <= 2){
 				this_game.open_door = door;
-				nextMove(this_game);
-				//Skicka ut infon till alla inblandade här
+				io.in(this_game.room).emit('sequence_state', door); //Berätta för alla i rummet vilken dörr som valdes
+				gameObj.game_state = 'sequence_state';
 			}else{
 				console.log("Dörr index utanför gränsen: " + door);
 			}
@@ -165,28 +172,30 @@ function newConnection(socket) {
 		}
       }
     );
-
-// -----------------------------------------------------------------------------------------
-// ----------------------------- S P E L L O G I K ---------------------------------------
-// -----------------------------------------------------------------------------------------
-
-function nextMove(gameObj){
 	
-	//pre_game, picking_door, choosing_sequence, animation_playing, game_over
-	switch (gameObj.game_state){
-		case 'pre_game':	
-			io.in(gameObj.room).emit('pick_door_state', gameObj.getCurrentPlayer().id); //Berätta för alla i rummet vems tur det är
-			gameObj.game_state = 'picking_door';
-			break;
-		case 'picking_door':
-			
-			break;
-		default:
-			break;
-	}
+	
+	
+	//										--- S E Q U E N C E   C H O S E N  ---
+	socket.on('sequence_chosen', function(sequence) {
+		this_room = Object.keys(socket.rooms)[1];
+		this_game = roomMap.get(this_room)[2];
+		
+		//Kolla om avsändaren redan har en sekvens, annars fyll i den
+		if(this_game.getPlayerFromID(socket.id).sequence != []){
+			this_game.getPlayerFromID(socket.id).sequence = this_game.controlledSequence(sequence);
+			console.log("Sekvens mottagen från " + socket.nickname + ": " + this_game.getPlayerFromID(socket.id).sequence);
+		}
+		
+		//Kolla om båda nu har sekvenser, i så fall gå vidare med spelet
+		if(this_game.players[0] != [] && this_game.players[1] != []){
+			console.log("Båda spelare har en sekvens i " + this_game.room);
+		}
+		
+		
+      }
+    );
+	
 }
-
-
 
 
 // ----------------------------------------------------------------------------
