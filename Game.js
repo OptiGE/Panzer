@@ -142,12 +142,21 @@ module.exports = class Game {
 			//Left	
 			case 3:
 				if (player.pos > 0){
+					
+					//Om man är vid en öppen dörr
+					if(isAtOpenDoor(player)){
+						this.other(player).animation.push([player, 'move_out_right']);
+					}
+					
+					//Flytta spelaren
 					player.pos --;
 					player.animation.push([player, 'move_left']);
 					
+					//Om man kom till en öppen dörr
 					if(isAtOpenDoor(player)){
-						this.other(player).animation.push([]);
+						this.other(player).animation.push([player, 'move_in_from_right']);
 					}
+					
 					
 				}else{
 					player.animation.push([player, 'move_left_fail']);

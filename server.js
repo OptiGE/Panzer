@@ -115,7 +115,7 @@ function newConnection(socket) {
 						
 						//Spelet är skapat!
 						socket.join(roomName);
-						let gameObj = new Game(roomName, io.sockets.sockets[roomMap.get(roomName)[0]].nickname, socket.nickname, getRandomInt(2));
+						let gameObj = new Game(roomName, io.sockets.sockets[roomMap.get(roomName)[0]].id, socket.id, getRandomInt(2));
 						roomMap.set(roomName, [roomMap.get(roomName)[0], socket.id, gameObj]); //Lägger ihop den gamla entrien med den nya spelaren och deras gemensamma spelobjekt
 						
 						//Låt klienten sätta upp sitt rum
