@@ -120,10 +120,22 @@ function setup() {
 		if (myID = playerID) {
 			buttons_clickable = true;
 			alert('Your turn!');
-		}else {
+		}else{
 			buttons_clickable = false;
 		}
 		gameState = 1;
+	});
+	
+	socket.on('sequence_state', function(doorNr){
+		if (doorNr == 0){
+			door_1.animation.changeFrame(1);
+			console.log(doorNr);
+		}else if (doorNr == 1){
+			door_2.animation.changeFrame(1);
+		}else if (doorNr == 2){
+			door_3.animation.changeFrame(1);
+		}
+		gameState = 2;
 	});
 	
 	
