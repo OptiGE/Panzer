@@ -145,7 +145,31 @@ module.exports = class Game {
 					
 					//Om man är vid en öppen dörr
 					if(isAtOpenDoor(player)){
-						this.other(player).animation.push([player, 'move_out_right']);
+						this.other(player).animation.push([player, 'move_out_to_right']);
+					}
+					
+					//Flytta spelaren
+					player.pos --;
+					player.animation.push([player, 'move_left']);
+					
+					//Om man kom till en öppen dörr
+					if(isAtOpenDoor(player)){
+						this.other(player).animation.push([player, 'move_in_from_left']);
+					}
+					
+					
+				}else{
+					player.animation.push([player, 'move_left_fail']);
+				}
+				break;
+				
+			//Right
+			case 4:
+				if (player.pos < 2){
+					
+					//Om man är vid en öppen dörr
+					if(isAtOpenDoor(player)){
+						this.other(player).animation.push([player, 'move_out_to_left']);
 					}
 					
 					//Flytta spelaren
@@ -158,16 +182,6 @@ module.exports = class Game {
 					}
 					
 					
-				}else{
-					player.animation.push([player, 'move_left_fail']);
-				}
-				break;
-				
-			//Right
-			case 4:
-				if (player.pos < 2){
-					player.pos ++;
-					player.animation.push([player, 'move_right']);
 				}else{
 					player.animation.push([player, 'move_right_fail']);
 				}
