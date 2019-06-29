@@ -187,16 +187,26 @@ module.exports = class Game {
 				}
 				break;
 
-			//Fire
+			//Fire          (hela det här caset går att strukturera om mycket snyggare med färre satser)
 			case 5:
 				if (player.pos + this.other(player).pos == 2){ //Om de står mittemot varandra
 					if (this.open_door == this.players[0].pos){ //Om dörren är öppen (baseras på p1)
 						this.other(player).health --;
-						player.animation.push([player, 'fire_hit']);
+						player.animation.push([player, 'fire']); //Du ska se eld ur egen kanon
+						this.other(player).animation.push([player, 'fire']); //Motståndaren skall se eld ur din kanon
+						player.animation.push([this.other(player), 'hit']); //Du skall se motståndaren bli träffad
+						this.other(player).animation.push([this.other(player), 'hit']); //Motståndaren skall se sig själv bli träffad
 					}else{
 						player.animation.push([player, 'fire_miss1']);
 					}
 				}else{
+					//Om de inte står mitt emot varandra, men den som skjuter står vid en öppen dörr
+					if (this.open_door == this.players[0].pos){
+						this.other(player).health --;
+						player.animation.push([player, 'fire']); //Du ska se eld ur egen kanon
+						this.other(player).animation.push([player, 'fire']); //Motståndaren skall se eld ur din kanon
+					}
+					
 					player.animation.push([player, 'fire_miss2']);
 				}
 				break;
