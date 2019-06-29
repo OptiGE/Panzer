@@ -39,10 +39,11 @@ var gameObj = {
 	current_player: 0 //0 för denna klient, 1 för motståndaren
 }
 
-var myID;
-var p1_nick = 'undefined';
-var p2_nick = 'undefined';
-var room_name = 'undefined';
+var myID = 'not_assigned';
+var opponentID = 'not_assigned';
+var p1_nick = 'not_assigned';
+var p2_nick = 'not_assigned';
+var room_name = 'not_assigned';
 
 class Panzer {
 	
@@ -92,11 +93,12 @@ function setup() {
 	
 	
 	// Event hanterare
-	socket.on('name_approved', function(name){
+	socket.on('name_approved', function(id){
 		btn_login.remove();
 		$('#loginModal').modal('hide');
-		roomScene(name);
-		p1_nick = name;
+		roomScene(id.name);
+		p1_nick = id.name;
+		myID = id.id;
 	});
 	
 	socket.on('join_room_approved', function(room){
@@ -108,20 +110,23 @@ function setup() {
 		room_name = room.name;
 	});
 	
-	socket.on('p2_joined', function(name){
+	socket.on('p2_joined', function(id){
 		/* textAlign(RIGHT);
 		text(name, windowWidth - (windowHeight / 25), windowHeight / 10); */
-		alert(name + ' just joined the game!');
+		alert(id.name + ' just joined the game!');
 		gameState = 1;
-		p2_nick = name;
+		p2_nick = id.name;
+		opponentID = id.id;
 	});
 	
 	socket.on('pick_door_state', function(playerID){
-		if (myID = playerID) {
+		alert(playerID + " will now choose a door");
+		if (myID == playerID) {
 			buttons_clickable = true;
 			alert('Your turn!');
 		}else{
 			buttons_clickable = false;
+			alert('Waiting for other player...');
 		}
 		gameState = 1;
 	});

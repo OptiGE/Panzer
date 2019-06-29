@@ -23,7 +23,7 @@ var server = app.listen(3000, started);
 function started() {
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log('Servern kör på '+ host + port);
+	console.log('Servern kör på port ' + port);
 	console.log(" - - - - ");
 	console.log(" - - -");
 	console.log(" - - ");
@@ -56,7 +56,7 @@ function newConnection(socket) {
 		console.log(socket.id + ' tries to get the name: ' + name);
 		if (name.length < 9){
 			socket.nickname = name;
-			socket.emit('name_approved', name);
+			socket.emit('name_approved', {name: name, id: socket.id});
 			console.log(socket.id + "is now called: " + socket.nickname);
 			//Just nu finns inget som kollar om namnet redan finns, eftersom att samma
 			//användarnamn på flera sockets inte är ett problem. Annars, skapa bara en map eller ett objekt
@@ -102,13 +102,13 @@ function newConnection(socket) {
 		function(roomName) {
 			roomName = roomName.toUpperCase();
 			console.log(socket.nickname + ' tries to join the room: ' + roomName);
-			console.log(roomMap);
+			console.log("Room map: " + roomMap);
 			console.log("-----");
 			//Kolla om rummet finns
 			if (roomMap.has(roomName)) {
 				//Kolla om rummet har en eller två spelare i sig.
 				var numClients = io.sockets.adapter.rooms[roomName].length;
-				console.log(numClients);
+				console.log("numClients: " + numClients);
 				if (numClients < 2) {
 					//Om användaren inte är med i något rum (utöver sitt egna)
 					if (!(Object.keys(socket.rooms).length > 1)){
@@ -123,11 +123,12 @@ function newConnection(socket) {
 						socket.emit('join_room_approved', { name: roomName, p1_nick: socket.nickname});
 						
 						//Ge medlemmarna varandras namn
-						socket.to(roomName).emit('p2_joined', socket.nickname); //Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
-						socket.emit('p2_joined', io.sockets.sockets[roomMap.get(roomName)[0]].nickname); //Skicka den som redan är i rummets namn till joinaren
+						socket.to(roomName).emit('p2_joined', {name: socket.nickname, id: socket.id}); //Skicka joinarens namn till alla som redan är i rummet (bör bara vara 1)
+						socket.emit('p2_joined', {name: io.sockets.sockets[roomMap.get(roomName)[0]].nickname, id: io.sockets.sockets[roomMap.get(roomName)[0]].id}); //Skicka den som redan är i rummets namn till joinaren
 						
 						//Sätt igång spelet!
 						io.in(roomName).emit('pick_door_state', gameObj.getCurrentPlayer().id); //Berätta för alla i rummet vems tur det är
+						console.log("currentPlayer.id: " + gameObj.getCurrentPlayer().id);
 						gameObj.game_state = 'pick_door_state';
 						
 					}else{
@@ -152,8 +153,8 @@ function newConnection(socket) {
 	//										--- D O O R   C H O S E N ---
 	socket.on('door_chosen', function(door) {
 		this_room = Object.keys(socket.rooms)[1];
-		console.log(socket.rooms);
-		console.log(this_room);
+		console.log("Socket.rooms: " + socket.rooms);
+		console.log("This_room: " + this_room);
 		this_game = roomMap.get(this_room)[2];
 		console.log(roomMap.get(this_room) + "-----");
 		
@@ -166,7 +167,7 @@ function newConnection(socket) {
 			if (door >= 0 && door <= 2){
 				this_game.open_door = door;
 				io.in(this_game.room).emit('sequence_state', door); //Berätta för alla i rummet vilken dörr som valdes
-				gameObj.game_state = 'sequence_state';
+				this_game.game_state = 'sequence_state';
 			}else{
 				console.log("Dörr index utanför gränsen: " + door);
 			}
