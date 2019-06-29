@@ -123,9 +123,11 @@ function setup() {
 		alert(playerID + " will now choose a door");
 		if (myID == playerID) {
 			buttons_clickable = true;
+			gameObj.current_player = 0;
 			alert('Your turn!');
 		}else{
 			buttons_clickable = false;
+			gameObj.current_player = 1;
 			alert('Waiting for other player...');
 		}
 		gameState = 1;
@@ -140,6 +142,8 @@ function setup() {
 		}else if (doorNr == 2){
 			door_3.animation.changeFrame(1);
 		}
+		alert("Door chosen. Please pick a sequence");
+		buttons_clickable = true;
 		gameState = 2;
 	});
 	
@@ -349,9 +353,16 @@ function gameScene(roomName, p1_nick){
 		}else{
 			alert("You can't join a room with no name!");
 		}
+		
+		
 	 }else if (rq == 3){
 		socket.emit('door_chosen', chosenDoorNr); 
 		console.log(chosenDoorNr);
+	 
+	 
+	 }else if (rq == 4){
+		socket.emit('sequence_chosen', actionArray); 
+		console.log("ActionArray som skickades: " + ActionArray);
 	 }
 	 
  }
@@ -492,9 +503,9 @@ var eventHandler = {
 	
 	createDoorHandler(doorNr, door){
 		return function(){
-			if (buttons_clickable && all_buttons_up){
+			if (buttons_clickable && all_buttons_up && gameObj.current_player == 0){
 				deselectDoors();
-				door.animation.changeFrame(1);
+				door.animation.changeFrame(1); //Gör dörren grön
 				buttons_clickable = false;
 				all_buttons_up = false;
 				chosenDoorNr = doorNr;
@@ -504,20 +515,44 @@ var eventHandler = {
 	
 	createLaunchHandler(){
 		return function(){
-			if (buttons_clickable && all_buttons_up){
-				btn_launch.animation.changeFrame(1);
-				buttons_clickable = false;
-				all_buttons_up = false;
-				launchSequence();
-				if (chosenDoorNr != -1){
-					sendRQ(3);
-					deselectDoors();
-				}
-					
-			}else if (!buttons_clickable && all_buttons_up) {
-				btn_launch.animation.changeFrame(2);
+			
+			console.log("Launchbutton nedtryckt i gameState: " + gameState);
+			
+			switch(gameState){
 				
-			}else {
+				case 0:
+					break;
+				
+				case 1:
+					// Om det är ens tur och knappar är klickbara
+					if (buttons_clickable && all_buttons_up && gameObj.current_player == 0){
+						btn_launch.animation.changeFrame(1);
+						buttons_clickable = false;
+						all_buttons_up = false;
+						launchSequence();
+						if (chosenDoorNr != -1){ //Om en dörr är vald
+							sendRQ(3);
+							deselectDoors();
+						}
+					//	
+					}else if (!buttons_clickable && all_buttons_up) {
+						btn_launch.animation.changeFrame(2);
+						buttons_clickable = false;
+						all_buttons_up = false;
+					}
+					break;
+					
+				case 2:
+					
+					if (buttons_clickable && all_buttons_up){
+						//Skicka sekvensen till servern!
+					}
+					
+				
+					break;
+					
+				case 3:
+					break;
 				
 			}
 		}
@@ -535,17 +570,8 @@ function actionChosen(frameNr) {
 
 function updateHealth() {
 	for (i = 0; i < 3; i++){
-		if (i < gameObj.this_health) {
-			hearts_p1[i].animation.changeFrame(0)
-		}else{
-			hearts_p1[i].animation.changeFrame(1);
-		}
-		if (i < gameObj.opponent_health) {
-			hearts_p2[i].animation.changeFrame(0)
-		}else{
-			hearts_p2[i].animation.changeFrame(1);
-		}
-		
+		hearts_p1[i].animation.changeFrame((i < gameObj.this_health) | 0); // Detta är samma som Number(i < gameObj.this_health), fast snabbare
+		hearts_p2[i].animation.changeFrame((i < gameObj.opponent_health) | 0);
 	}
 }
 
