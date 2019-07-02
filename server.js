@@ -181,6 +181,7 @@ function newConnection(socket) {
 	
 	//										--- S E Q U E N C E   C H O S E N  ---
 	socket.on('sequence_chosen', function(sequence) {
+		console.log("Sequence chosen from " + socket.nickname + "/" + socket.id);
 		this_room = Object.keys(socket.rooms)[1];
 		this_game = roomMap.get(this_room)[2];
 		
@@ -191,8 +192,9 @@ function newConnection(socket) {
 		}
 		
 		//Kolla om båda nu har sekvenser, i så fall gå vidare med spelet
-		if(this_game.players[0] != [] && this_game.players[1] != []){
+		if(this_game.players[0].sequence.length == 3 && this_game.players[1].sequence.length == 3){
 			console.log("Båda spelare har en sekvens i " + this_game.room);
+			socket.emit('animation_state', ['fire', 'fire', 'fire']); //Skall förstås emittas till båda
 		}
 		
       }

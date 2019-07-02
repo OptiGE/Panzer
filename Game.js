@@ -24,6 +24,8 @@ module.exports = class Game {
 	
 	controlledSequence(sequence){
 		
+		console.log(sequence.length + "-----");
+		
 		if(sequence.length != 3){
 			console.log("VARNING! - En sekvens hade fel längd - VARNING!");
 			return [2, 2, 2];

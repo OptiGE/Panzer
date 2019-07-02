@@ -147,6 +147,9 @@ function setup() {
 		gameState = 2;
 	});
 	
+	socket.on('animation_state', function(animation){
+		alert("Animation received: " + animation);
+	});
 	
 	// För att förhindra scroll på mobilen
 	$('body').addClass('overflow'); 
@@ -439,7 +442,7 @@ var eventHandler = {
 
 	createActionHandler(action, btn) {
 		return function() {
-			if(buttons_clickable && all_buttons_up && actionArray.includes(0)){
+			if(buttons_clickable && all_buttons_up && actionArray.includes(0) && gameState == 2){
 				btn.animation.changeFrame(1);
 				buttons_clickable = false;
 				all_buttons_up = false;
@@ -459,7 +462,7 @@ var eventHandler = {
 
 	createFireActionHandler() {
 		return function(){
-			if(buttons_clickable && all_buttons_up){
+			if(buttons_clickable && all_buttons_up && actionArray.includes(0) && gameState == 2){
 				btn_fire.animation.changeFrame(1);
 				buttons_clickable = false;
 				all_buttons_up = false;
@@ -467,12 +470,14 @@ var eventHandler = {
 					btn_fire.animation.changeFrame(2);
 					all_buttons_up = false;
 				} else if (actionArray.includes(0)) {
-					actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
+					if (actionArray.findIndex(k => k == 0) + 1 < 3){ //Om stoppet efter elden hamnar inom arrayen
+						actionArray[actionArray.findIndex(k => k == 0) + 1] = 0; //Töm platsen efteråt också
+					}
 					actionChosen(5); //Lägg till en eld
 					actionChosen(1); //Lägg ett stopp där
 				}
-			}else if (!buttons_clickable && all_buttons_up || !actionArray.includes(0) && all_buttons_up){
-				btn_fire.animation.changeFrame(2);
+			}else if (all_buttons_up && (!buttons_clickable || !actionArray.includes(0))){ //Om man antingen inte får trycka på knappar, eller inget mer kan läggas till
+				btn_fire.animation.changeFrame(2); //Röd knapp
 				all_buttons_up = false;
 				
 			}else {
@@ -503,7 +508,7 @@ var eventHandler = {
 	
 	createDoorHandler(doorNr, door){
 		return function(){
-			if (buttons_clickable && all_buttons_up && gameObj.current_player == 0){
+			if (buttons_clickable && all_buttons_up && gameObj.current_player == 0 && gameState == 1){
 				deselectDoors();
 				door.animation.changeFrame(1); //Gör dörren grön
 				buttons_clickable = false;
@@ -545,7 +550,16 @@ var eventHandler = {
 				case 2:
 					
 					if (buttons_clickable && all_buttons_up){
+						btn_launch.animation.changeFrame(1);
+						buttons_clickable = false;
+						all_buttons_up = false;
 						//Skicka sekvensen till servern!
+						socket.emit('sequence_chosen', actionArray);
+						alert('Sequence sent to server. Now resetting...');
+						for(i = 0; i < 3; i ++){
+							slotArray[i].animation.changeFrame(0);
+							actionArray[i] = 0;
+						}
 					}
 					
 				
@@ -560,8 +574,11 @@ var eventHandler = {
 }
 
 
-function actionChosen(frameNr) { 
-	actionArray[actionArray.findIndex(k => k == 0)] = frameNr;
+function actionChosen(frameNr) {
+	first_zero = actionArray.findIndex(k => k == 0);
+	if(first_zero < 0 || first_zero > 2){return;}
+	
+	actionArray[first_zero] = frameNr;
 	for (i=0; i<slotArray.length; i++) {
 		slotArray[i].animation.changeFrame(actionArray[i]);
 	}
