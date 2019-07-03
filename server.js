@@ -193,8 +193,30 @@ function newConnection(socket) {
 		
 		//Kolla om båda nu har sekvenser, i så fall gå vidare med spelet
 		if(this_game.players[0].sequence.length == 3 && this_game.players[1].sequence.length == 3){
-			console.log("Båda spelare har en sekvens i " + this_game.room);
-			socket.emit('animation_state', ['fire', 'fire', 'fire']); //Skall förstås emittas till båda
+			console.log("Båda spelare har en sekvens i " + this_game.room + ". Kör igenom ronda och skapar animaiton!");
+			
+			this_game.execSequence();
+			
+			//Skicka animationer och speldata (som hälsa, position (inte den hemliga positionen) osv, nu efter att alla sekvenser är utförda)
+			this_animation = this_game.getPlayerFromID(socket.id).animation;
+			other_animation = this_game.other(this_game.getPlayerFromID(socket.id)).animation;
+			
+			
+			
+			
+			
+			//HÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄR  SKAAAAAAAAAAAAAAAAAAAAAAA  DUUUUUUUUUUUUUUUUUUUUUUUUUU FORTSÄTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+			
+			
+			
+			
+			
+			socket.emit('animation_state', "Hej"); //Till den aktiva socketen
+			socket.to(this_room).emit('animation_state', "Hå"); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
+			
+			//Nu en megaemit med alla nya värden?
+			//socket.emitToHelaRummet('game_state_update', gameStateInfoBös);
+						
 		}
 		
       }

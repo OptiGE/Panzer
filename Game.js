@@ -22,6 +22,36 @@ module.exports = class Game {
 		}
 	}
 	
+	other(player){
+		if(player.id == this.players[0].id){
+			//Om spelaren är P1
+			return this.players[1];
+		}else if(player.id == this.players[1].id){
+			//Om spelaren är P2
+			return this.players[0];
+		}else{
+			console.log("VARNING! - Other(player) fick en felaktig spelare: " + player + " - VARNING");
+			return undefined;
+		}
+	}
+	
+	isAtOpenDoor(player){
+		if(player.id == this.players[0].id){
+			//Om spelaren är P1
+			return (player.pos == this.open_door)
+		}else if(player.id == this.players[1].id){
+			//Om spelaren är P2
+			return (2 - player.pos == this.open_door)
+		}else{
+			console.log("VARNING! - isAtOpenDoor(player) fick en felaktig spelare: " + player + " - VARNING");
+			return undefined;
+		}
+	}
+	
+	nextPlayer(){
+		this.current_player = this.other(current_player);
+	}
+	
 	controlledSequence(sequence){
 		
 		console.log(sequence.length + "-----");
@@ -72,40 +102,14 @@ module.exports = class Game {
 
 	}
 	
-	other(player){
-		if(player.id == this.players[0].id){
-			//Om spelaren är P1
-			return this.players[1].id;
-		}else if(player.id == this.players[1].id){
-			//Om spelaren är P2
-			return this.players[0].id;
-		}else{
-			console.log("VARNING! - Other(player) fick en felaktig spelare: " + player + " - VARNING");
-			return undefined;
-		}
-	}
 	
-	isAtOpenDoor(player){
-		if(player.id == this.players[0].id){
-			//Om spelaren är P1
-			return (player.pos == this.open_door)
-		}else if(player.id == this.players[1].id){
-			//Om spelaren är P2
-			return (2 - player.pos == this.open_door)
-		}else{
-			console.log("VARNING! - isAtOpenDoor(player) fick en felaktig spelare: " + player + " - VARNING");
-			return undefined;
-		}
-	}
 	
-	nextPlayer(){
-		this.current_player = this.other(current_player);
-	}	
+		
 	
 	//Både räknar ut vad som händer i spelet och fyller player.animation med det den skall visa
 	execSequence(){
 		
-		if(this.players[0].seq.length != 3 || this.players[1].seq.length != 3){
+		if(this.players[0].sequence.length != 3 || this.players[1].sequence.length != 3){
 			console.log("Both players do not have a sequence yet!");
 		}
 		
@@ -118,11 +122,11 @@ module.exports = class Game {
 		for(let i = 0; i < 3; i++){
 			//Bestämmer om p1 eller p2 prioriteras
 			if (this.current_player == 0){
-				this.execMove(this.players[0].seq[i], this.players[0]);
-				this.execMove(this.players[1].seq[i], this.players[1]);
-			}else{                   
-				this.execMove(this.players[1].seq[i], this.players[1]);
-				this.execMove(this.players[0].seq[i], this.players[0]);
+				this.execMove(this.players[0].sequence[i], this.players[0]);
+				this.execMove(this.players[1].sequence[i], this.players[1]);
+			}else{                            
+				this.execMove(this.players[1].sequence[i], this.players[1]);
+				this.execMove(this.players[0].sequence[i], this.players[0]);
 			}
 		}
 	}
@@ -170,7 +174,7 @@ module.exports = class Game {
 				if (player.pos < 2){
 					
 					//Om man är vid en öppen dörr
-					if(isAtOpenDoor(player)){
+					if(this.isAtOpenDoor(player)){
 						this.other(player).animation.push([player, 'move_out_to_left']);
 					}
 					
@@ -179,7 +183,7 @@ module.exports = class Game {
 					player.animation.push([player, 'move_left']);
 					
 					//Om man kom till en öppen dörr
-					if(isAtOpenDoor(player)){
+					if(this.isAtOpenDoor(player)){
 						this.other(player).animation.push([player, 'move_in_from_right']);
 					}
 					
@@ -199,7 +203,7 @@ module.exports = class Game {
 						player.animation.push([this.other(player), 'hit']); //Du skall se motståndaren bli träffad
 						this.other(player).animation.push([this.other(player), 'hit']); //Motståndaren skall se sig själv bli träffad
 					}else{
-						player.animation.push([player, 'fire_miss1']);
+						player.animation.push([player, 'fire_miss']);
 					}
 				}else{
 					//Om de inte står mitt emot varandra, men den som skjuter står vid en öppen dörr
@@ -209,7 +213,7 @@ module.exports = class Game {
 						this.other(player).animation.push([player, 'fire']); //Motståndaren skall se eld ur din kanon
 					}
 					
-					player.animation.push([player, 'fire_miss2']);
+					player.animation.push([player, 'fire_miss']);
 				}
 				break;
 							
