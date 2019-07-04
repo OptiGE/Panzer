@@ -152,21 +152,25 @@ function newConnection(socket) {
   
 	//										--- D O O R   C H O S E N ---
 	socket.on('door_chosen', function(door) {
+		
 		this_room = Object.keys(socket.rooms)[1];
-		console.log("Socket.rooms: " + socket.rooms);
-		console.log("This_room: " + this_room);
 		this_game = roomMap.get(this_room)[2];
-		console.log(roomMap.get(this_room) + "-----");
 		
 		if(this_game.game_state != 'pick_door_state'){
 			console.log("Någon försökte välja en dörr i fel state: " + socket.nickname);
 			return;
 		}
 		
-		if (this_game.getCurrentPlayer().id == socket.id){
-			if (door >= 0 && door <= 2){
-				this_game.open_door = door;
-				io.in(this_game.room).emit('sequence_state', door); //Berätta för alla i rummet vilken dörr som valdes
+		if (this_game.getCurrentPlayer().id == socket.id){ //Om det är den här spelarens tur att välja dörr
+			if (door >= 0 && door <= 2){ //Om det är en ok dörr att välja
+				
+				isPlayerOne = Number(!(socket.id == this_game.players[0].id)); //1 Om spelare 1, 0 om spelare två (negeras för att matten i nästa rad skall gå ihop)
+				
+				this_game.open_door	= 2*isPlayerOne + (door * Math.pow(-1, isPlayerOne)); // Blir antingen (door), eller (2 - door).
+				
+				socket.emit('sequence_state', door); //Till den aktiva socketen
+				socket.to(this_room).emit('sequence_state', 2 - door); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
+				
 				this_game.game_state = 'sequence_state';
 			}else{
 				console.log("Dörr index utanför gränsen: " + door);
@@ -200,16 +204,8 @@ function newConnection(socket) {
 			//Skicka animationer och speldata (som hälsa, position (inte den hemliga positionen) osv, nu efter att alla sekvenser är utförda)
 			this_animation = this_game.getPlayerFromID(socket.id).animation;
 			other_animation = this_game.other(this_game.getPlayerFromID(socket.id)).animation;
-			
-			
-			
-			
-			
-			//HÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄR  SKAAAAAAAAAAAAAAAAAAAAAAA  DUUUUUUUUUUUUUUUUUUUUUUUUUU FORTSÄTTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-			
-			
-			
-			
+			console.log("First animation: " + other_animation);
+			console.log("This animation: " + this_animation);
 			
 			socket.emit('animation_state', "Hej"); //Till den aktiva socketen
 			socket.to(this_room).emit('animation_state', "Hå"); //Till alla i rummet som inte är denna socketen (alltså motståndaren)

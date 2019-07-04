@@ -2,9 +2,9 @@ module.exports = class Game {
 	
 	constructor(room, p1_id, p2_id, current_player){
 		this.room = room;
-		this.players = [{id: p1_id, health: 3, pos: 1, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 1, sequence: [], animation: []}]
+		this.players = [{id: p1_id, health: 3, pos: 0, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 0, sequence: [], animation: []}]
 		this.current_player = current_player; //true = p1, false = p2
-		this.open_door = 4; // 4 = undefined
+		this.open_door = -1; // -1 = undefined
 		this.game_state = 'pre_game'; //pre_game, picking_door, choosing_sequence, animation_playing, game_over
 	}
 	
@@ -102,10 +102,6 @@ module.exports = class Game {
 
 	}
 	
-	
-	
-		
-	
 	//Både räknar ut vad som händer i spelet och fyller player.animation med det den skall visa
 	execSequence(){
 		
@@ -137,12 +133,12 @@ module.exports = class Game {
 			
 			//Stop_lock
 			case 1:
-				player.animation.push([player, 'stay']);
+				player.animation.push([player.id, 'stay']);
 				break;
 			
 			//Stop
 			case 2:
-				player.animation.push([player, 'stay']);
+				player.animation.push([player.id, 'stay']);
 				break;
 					
 			//Left	
@@ -150,22 +146,24 @@ module.exports = class Game {
 				if (player.pos > 0){
 					
 					//Om man är vid en öppen dörr
-					if(isAtOpenDoor(player)){
-						this.other(player).animation.push([player, 'move_out_to_right']);
+					if(this.isAtOpenDoor(player)){
+						console.log("Push till annan");
+						this.other(player).animation.push([player.id, 'move_out_to_right']);
 					}
 					
 					//Flytta spelaren
 					player.pos --;
-					player.animation.push([player, 'move_left']);
+					player.animation.push([player.id, 'move_left']);
 					
 					//Om man kom till en öppen dörr
-					if(isAtOpenDoor(player)){
-						this.other(player).animation.push([player, 'move_in_from_left']);
+					if(this.isAtOpenDoor(player)){
+						console.log("Push till annan");
+						this.other(player).animation.push([player.id, 'move_in_from_left']);
 					}
 					
 					
 				}else{
-					player.animation.push([player, 'move_left_fail']);
+					player.animation.push([player.id, 'move_left_fail']);
 				}
 				break;
 				
@@ -175,45 +173,45 @@ module.exports = class Game {
 					
 					//Om man är vid en öppen dörr
 					if(this.isAtOpenDoor(player)){
-						this.other(player).animation.push([player, 'move_out_to_left']);
+						console.log("Push till annan");
+						this.other(player).animation.push([player.id, 'move_out_to_left']);
 					}
 					
 					//Flytta spelaren
-					player.pos --;
-					player.animation.push([player, 'move_left']);
+					player.pos ++;
+					player.animation.push([player.id, 'move_right']);
 					
 					//Om man kom till en öppen dörr
 					if(this.isAtOpenDoor(player)){
-						this.other(player).animation.push([player, 'move_in_from_right']);
+						console.log("Push till annan");
+						this.other(player).animation.push([player.id, 'move_in_from_right']);
 					}
 					
 					
 				}else{
-					player.animation.push([player, 'move_right_fail']);
+					player.animation.push([player.id, 'move_right_fail']);
 				}
 				break;
 
 			//Fire          (hela det här caset går att strukturera om mycket snyggare med färre satser)
 			case 5:
 				if (player.pos + this.other(player).pos == 2){ //Om de står mittemot varandra
-					if (this.open_door == this.players[0].pos){ //Om dörren är öppen (baseras på p1)
+					if (this.isAtOpenDoor(player)){ //Om dörren är öppen (baseras på p1), därför funkar inte isAtOpenDoor
 						this.other(player).health --;
-						player.animation.push([player, 'fire']); //Du ska se eld ur egen kanon
-						this.other(player).animation.push([player, 'fire']); //Motståndaren skall se eld ur din kanon
-						player.animation.push([this.other(player), 'hit']); //Du skall se motståndaren bli träffad
-						this.other(player).animation.push([this.other(player), 'hit']); //Motståndaren skall se sig själv bli träffad
+						player.animation.push([player.id, 'fire']); //Du ska se eld ur egen kanon
+						this.other(player).animation.push([player.id, 'fire']); //Motståndaren skall se eld ur din kanon
+						player.animation.push([this.other(player).id, 'hit']); //Du skall se motståndaren bli träffad
+						this.other(player).animation.push([this.other(player).id, 'hit']); //Motståndaren skall se sig själv bli träffad
 					}else{
-						player.animation.push([player, 'fire_miss']);
+						player.animation.push([player.id, 'fire_miss1']);
 					}
-				}else{
-					//Om de inte står mitt emot varandra, men den som skjuter står vid en öppen dörr
-					if (this.open_door == this.players[0].pos){
-						this.other(player).health --;
-						player.animation.push([player, 'fire']); //Du ska se eld ur egen kanon
-						this.other(player).animation.push([player, 'fire']); //Motståndaren skall se eld ur din kanon
+				}else{ //Om de inte står mittemot varandra
+					if (this.isAtOpenDoor(player)){ //Om den som skjuter står vid en öppen dörr
+						player.animation.push([player.id, 'fire']); //Du ska se eld ur egen kanon
+						this.other(player).animation.push([player.id, 'fire']); //Motståndaren skall se eld ur din kanon
+					}else{
+						player.animation.push([player.id, 'fire_miss2']);
 					}
-					
-					player.animation.push([player, 'fire_miss']);
 				}
 				break;
 							
