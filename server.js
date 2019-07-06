@@ -23,11 +23,8 @@ var server = app.listen(3000, started);
 function started() {
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log('Servern kör på port ' + port);
-	console.log(" - - - - ");
-	console.log(" - - -");
-	console.log(" - - ");
-	console.log(" - ");
+	console.log('Servern kör på port: ' + port);
+	console.log("");
 }
 
 // Ge ut 'public' mappen som statisk förstasida vid get. 
@@ -204,11 +201,9 @@ function newConnection(socket) {
 			//Skicka animationer och speldata (som hälsa, position (inte den hemliga positionen) osv, nu efter att alla sekvenser är utförda)
 			this_animation = this_game.getPlayerFromID(socket.id).animation;
 			other_animation = this_game.other(this_game.getPlayerFromID(socket.id)).animation;
-			console.log("First animation: " + other_animation);
-			console.log("This animation: " + this_animation);
 			
-			socket.emit('animation_state', "Hej"); //Till den aktiva socketen
-			socket.to(this_room).emit('animation_state', "Hå"); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
+			socket.emit('animation_state', this_animation); //Till den aktiva socketen
+			socket.to(this_room).emit('animation_state', other_animation); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
 			
 			//Nu en megaemit med alla nya värden?
 			//socket.emitToHelaRummet('game_state_update', gameStateInfoBös);
