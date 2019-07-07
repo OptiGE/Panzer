@@ -13,8 +13,7 @@ class Panzer {
 	
 	nextMove(){
 		
-		console.log("NextMoveCalled");
-		
+		//Säkerhetskollar
 		if(!this.animation_ready){
 			console.log("Warning - Previous animation not done yet");
 			return;
@@ -24,17 +23,19 @@ class Panzer {
 			return;
 		}
 		
+		var self = this; //Behövs i lägre scopes nedan
 		
-		currentlyMoving.push(this);
-		switch(this.animation_queue.shift()){ //shift tar bort och returnerar det äldsta elementet
+		var next_animation = this.animation_queue.shift(); //shift tar bort och returnerar det äldsta elementet
+		console.log("Kör nu switch på: " + next_animation);
+		switch(next_animation){
 			
 			case 'move_left':
 				if(this.pos > 0){
 					this.animation_ready = false;
-					//Push to moving_array
 					this.pos --;
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
+					currentlyMoving.push(self);
 				}else{
 					console.log("Could not move further left");
 					return;
@@ -47,7 +48,7 @@ class Panzer {
 					this.pos ++;
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
-					break;	
+					currentlyMoving.push(self);
 				}else{
 					console.log("Could not move further right");
 					return;
@@ -62,8 +63,8 @@ class Panzer {
 				
 				setTimeout(function(elem) {
 				elem.animation.changeFrame(0);
-				this.animation_ready = true;
-				//this.nextMove(); Behöver callas, men kan inte refereras till från inuti sig själv
+				self.animation_ready = true;
+				self.nextMove();
 				}, 300, this.element.sprite);
 				
 				
@@ -74,12 +75,13 @@ class Panzer {
 				this.animation_ready = false;
 				
 				setTimeout(function() {
-				this.animation_ready = true;
-				//this.nextMove(); Behöver callas, men kan inte refereras till från inuti sig själv
-				}, 200);
+				self.animation_ready = true;
+				self.nextMove();
+				}, 300);
+				break;
 				
 			default:
-				console.log("Invalid animation input");
+				console.log("Invalid animation input: " + next_animation);
 		}
 		
 	}

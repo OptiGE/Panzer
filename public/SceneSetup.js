@@ -147,13 +147,15 @@ class SceneSetup{
 		
 		
 		p1.animation_queue.push("move_right");
+		p1.animation_queue.push("wait");
 		p1.animation_queue.push("move_right");
-		p1.animation_queue.push("move_right");
+		p1.animation_queue.push("wait");
 		p1.animation_queue.push("move_left");
+		p1.animation_queue.push("wait");
 		p1.animation_queue.push("fire");
+		p1.animation_queue.push("wait");
 		p1.animation_queue.push("fire");
 		
-		console.log("NextMove called för första gången");
 		p1.nextMove();
 		
 	}
