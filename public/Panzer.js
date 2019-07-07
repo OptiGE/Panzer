@@ -55,11 +55,28 @@ class Panzer {
 				break;
 				
 			case 'fire':
+				console.log("Fire");
+			
+				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(1);
+				
 				setTimeout(function(elem) {
-				elem.sprite.animation.changeFrame(0);
+				elem.animation.changeFrame(0);
+				this.animation_ready = true;
+				//this.nextMove(); Behöver callas, men kan inte refereras till från inuti sig själv
 				}, 300, this.element.sprite);
+				
+				
 				break;
+				
+			case 'wait':
+				console.log("Waiting");
+				this.animation_ready = false;
+				
+				setTimeout(function() {
+				this.animation_ready = true;
+				//this.nextMove(); Behöver callas, men kan inte refereras till från inuti sig själv
+				}, 200);
 				
 			default:
 				console.log("Invalid animation input");
