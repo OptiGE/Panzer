@@ -1,5 +1,9 @@
 class SceneSetup{
 	
+	//-------------------------------------------------------------------------------------------------
+	//-------------------------------------- L O G I N   S C E N E ------------------------------------
+	//-------------------------------------------------------------------------------------------------
+	
 	static loginScene(){
 		
 		current_scene = 'login_scene';
@@ -21,6 +25,12 @@ class SceneSetup{
 			}
 		};
 	}
+
+
+	//-------------------------------------------------------------------------------------------------
+	//-------------------------------------- R O O M   S C E N E ------------------------------------
+	//-------------------------------------------------------------------------------------------------
+
 
 
 	static roomScene(name){
@@ -60,6 +70,10 @@ class SceneSetup{
 	}
 
 
+	//-------------------------------------------------------------------------------------------------
+	//-------------------------------------- G A M E   S C E N E ------------------------------------
+	//-------------------------------------------------------------------------------------------------
+
 	static gameScene(roomName, p1_nick){
 		
 		current_scene = 'game_scene';
@@ -93,6 +107,7 @@ class SceneSetup{
 		door_1 = new Element('doorButton', -15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
 		door_2 = new Element('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
 		door_3 = new Element('doorButton', 15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+		doors = [door_1, door_2, door_3];
 		
 		//Hjärtan
 		hearts_p1 = [];
@@ -107,12 +122,8 @@ class SceneSetup{
 		//Launch-knapp
 		btn_launch = new Element('launchButton', 0, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png']);
 		
-		
-		
 		//Panzer
 		p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');
-		//p1.moveRight();
-		console.log(p1.sprite.sprite.position.x);
 		
 		//Actionfield-variabler
 		slotArray = [slot_1, slot_2, slot_3];
@@ -133,6 +144,14 @@ class SceneSetup{
 		door_3.sprite.onMousePressed = EventHandler.DoorHandler(2, door_3);
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
-
+		
+		
+		p1.animation_queue.push("move_right");
+		p1.animation_queue.push("move_left");
+		p1.animation_queue.push("move_right");
+		p1.animation_queue.push("move_left");
+		console.log("NextMove called för första gången");
+		p1.nextMove();
+		
 	}
 }

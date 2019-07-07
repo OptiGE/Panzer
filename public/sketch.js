@@ -1,6 +1,10 @@
+//-------------------------------------------------------------------------------------------
+
+//----------------------------- F Ö R B E R E D E L S E R -----------------------------------
+
+//-------------------------------------------------------------------------------------------
 // Socketvariabler
 var socket;
-
 
 //Knappkontroll
 var buttons_clickable = true;
@@ -12,7 +16,7 @@ var btn_stop, btn_left, btn_right, btn_fire;
 var actionfield;
 var slot_1, slot_2, slot_3;
 var field_1, field_2;
-var door_1, door_2, door_3;
+var door_1, door_2, door_3, doors;
 
 var hearts_p1 = [];
 var hearts_p2 = [];
@@ -30,23 +34,19 @@ let font;
 // In-gamevariabler
 var actionArray;
 var slotArray;
-var gameState = 1;
 var	chosenDoorNr = -1;
 
+var gameState = 1;
+const waitingState = 0, pickDoorState = 1, pickSequenceState = 2, animationState = 3, gameOverState = 4;
 
-/*	waitingState = 0;
-	pickDoorState = 1;
-	pickSequenceState = 2;
-	animationState = 3;
-	gameOverState = 4;
+//Array för alla objekt som rör sig
+var currentlyMoving = [];
 
-	*/
 	
 var gameObj = {
 	this_id: '', //antingen p1 eller p2
 	opponent_id: '', //antingen p1 eller p2
 	this_pos: 1,
-	opponent_pos: 2,
 	this_health: 3,
 	opponent_health: 3,
 	current_player: 0 //0 för denna klient, 1 för motståndaren
@@ -58,31 +58,11 @@ var p1_nick = 'not_assigned';
 var p2_nick = 'not_assigned';
 var room_name = 'not_assigned';
 
-class Panzer {
-	
-	constructor(pos, img1, img2) {
-		this.pos = pos;
-		this.img1 = img1;
-		this.img2 = img2;
-		this.sprite = new Element('panzer', 0, 270, 270, ['assets/tank.png', 'assets/tank_fire.png']);
-	}
-	
-	moveRight() {
-		//this.sprite.setSpeed(3, 0);
-		this.sprite.position.x = this.sprite.position.x + (door_2.position.x - door_1.position.x);
-	}
-	
-	moveLeft() {
-		//this.sprite.position.x = this.sprite.position.x - (door_2.position.x - door_1.position.x);
-	}
-	
-	fire() {
-		this.sprite.animation.changeFrame(1);
-		setTimeout(function(bog) {
-		bog.sprite.animation.changeFrame(0);
-		}, 300, this.sprite);
-	}
-}
+//-------------------------------------------------------------------------------------------
+
+//----------------------------- P 5   F U N K T I O N E R -----------------------------------
+
+//-------------------------------------------------------------------------------------------
 
 function preload() {
   //Ladda in non-sprite assets
@@ -169,7 +149,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	SceneSetup.loginScene();
+	SceneSetup.gameScene();
 	
 	
 }
@@ -185,13 +165,49 @@ function draw() {
 			textAlign(RIGHT);
 			text(p2_nick, windowWidth - (windowHeight / 25), windowHeight / 10);
 		}
+		
+		
+		//Kan skrivas kortare och snyggare!
+		//Kolla om de objekt som rör på sig har nått sitt target. Isf stanna dem
+		for(i = 0; i < currentlyMoving.length; i++){
+			
+			moving_element = currentlyMoving[i];
+			
+			if(moving_element.element.sprite.getDirection() == 0){ //Om den rör sig åt höger
+				
+				if(moving_element.element.sprite.position.x >= moving_element.target.x){
+					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
+					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
+					
+					moving_element.nextMove();
+					break;
+				}
+			}
+			if(moving_element.element.sprite.getDirection() == 180){ //Om den rör sig åt vänster
+				if(moving_element.element.sprite.position.x <= moving_element.target.x){
+					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
+					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
+					
+					moving_element.nextMove();
+					break;
+				}
+			}
+		}
+		
 	}
 }
 
 
 
 
-// ------------------- M O B I L A N P A S S N I N G -----------------------------
+
+//-------------------------------------------------------------------------------------------
+
+//----------------------------- Ö V R I G A   F U N K T I O N E R ---------------------------
+
+//-------------------------------------------------------------------------------------------
+
+
 
 /* function touchStarted () {
   var fs = fullscreen();
@@ -200,48 +216,10 @@ function draw() {
   }
 }
  */
-
- function sendRQ(rq){
-	 if (rq == 0){
-		if (document.getElementById('inputName').value != ''){
-			socket.emit('get_name', document.getElementById('inputName').value.toUpperCase());
-		}else{
-			alert("You can't log in without a name!");
-		}
-		
-		
-	 }else if (rq == 1){
-		if (document.getElementById('inputCRoomName').value != ''){
-			socket.emit('create_room', document.getElementById('inputCRoomName').value);
-		}else{
-			alert("You can't create a room with no name!");
-		}
-		
-		
-	 }else if (rq == 2){
-		if (document.getElementById('inputJRoomName').value != ''){
-			socket.emit('join_room', document.getElementById('inputJRoomName').value.toUpperCase());
-		}else{
-			alert("You can't join a room with no name!");
-		}
-		
-		
-	 }else if (rq == 3){
-		socket.emit('door_chosen', chosenDoorNr); 
-		console.log(chosenDoorNr);
-	 
-	 
-	 }else if (rq == 4){
-		socket.emit('sequence_chosen', actionArray); 
-		console.log("ActionArray som skickades: " + ActionArray);
-	 }
-	 
- }
-
+ 
 function windowResized() {
 	console.log("Window resized");
 }
-
 
 function actionChosen(frameNr) {
 	first_zero = actionArray.findIndex(k => k == 0);
@@ -284,13 +262,13 @@ function launchSequence() {
 function launchAction(slot) {
 	switch(slot) {
 		case 3:
-			p1.moveLeft();
+			p1.skipLeft();
 			break;
 		case 4:
-			p1.moveRight();
+			p1.skipRight();
 			break;
 		case 5:
-			p1.fire();
+			p1.animateFire();
 			break;
 		default:
 			break;
@@ -314,3 +292,41 @@ function mouseReleased() {
 		all_buttons_up = true;
 	}
 }
+ 
+function sendRQ(rq){
+	 if (rq == 0){
+		if (document.getElementById('inputName').value != ''){
+			socket.emit('get_name', document.getElementById('inputName').value.toUpperCase());
+		}else{
+			alert("You can't log in without a name!");
+		}
+		
+		
+	 }else if (rq == 1){
+		if (document.getElementById('inputCRoomName').value != ''){
+			socket.emit('create_room', document.getElementById('inputCRoomName').value);
+		}else{
+			alert("You can't create a room with no name!");
+		}
+		
+		
+	 }else if (rq == 2){
+		if (document.getElementById('inputJRoomName').value != ''){
+			socket.emit('join_room', document.getElementById('inputJRoomName').value.toUpperCase());
+		}else{
+			alert("You can't join a room with no name!");
+		}
+		
+		
+	 }else if (rq == 3){
+		socket.emit('door_chosen', chosenDoorNr); 
+		console.log(chosenDoorNr);
+	 
+	 
+	 }else if (rq == 4){
+		socket.emit('sequence_chosen', actionArray); 
+		console.log("ActionArray som skickades: " + ActionArray);
+	 }
+	 
+ }
+
