@@ -155,8 +155,8 @@ class SceneSetup{
 		p1.animation_queue.push("fire");
 		p1.animation_queue.push("wait");
 		p1.animation_queue.push("fire");
-		
 		p1.nextMove();
+		
 		
 	}
 }

@@ -14,19 +14,12 @@ class Panzer {
 	nextMove(){
 		
 		//Säkerhetskollar
-		if(!this.animation_ready){
-			console.log("Warning - Previous animation not done yet");
-			return;
-		}
-		if(this.animation_queue.length < 1){
-			console.log("Warning - No animations left in queue");
-			return;
-		}
+		if(!this.animation_ready){return;}
+		if(this.animation_queue.length < 1){return;}
 		
 		var self = this; //Behövs i lägre scopes nedan
-		
 		var next_animation = this.animation_queue.shift(); //shift tar bort och returnerar det äldsta elementet
-		console.log("Kör nu switch på: " + next_animation);
+
 		switch(next_animation){
 			
 			case 'move_left':
@@ -34,8 +27,9 @@ class Panzer {
 					this.animation_ready = false;
 					this.pos --;
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
+					this.element.sprite.rotation = -90;
 					this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
-					currentlyMoving.push(self);
+					currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				}else{
 					console.log("Could not move further left");
 					return;
@@ -47,8 +41,9 @@ class Panzer {
 					this.animation_ready = false;
 					this.pos ++;
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
+					this.element.sprite.rotation = 90;
 					this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
-					currentlyMoving.push(self);
+					currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				}else{
 					console.log("Could not move further right");
 					return;
@@ -56,8 +51,6 @@ class Panzer {
 				break;
 				
 			case 'fire':
-				console.log("Fire");
-			
 				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(1);
 				
@@ -66,8 +59,6 @@ class Panzer {
 				self.animation_ready = true;
 				self.nextMove();
 				}, 300, this.element.sprite);
-				
-				
 				break;
 				
 			case 'wait':
@@ -77,7 +68,7 @@ class Panzer {
 				setTimeout(function() {
 				self.animation_ready = true;
 				self.nextMove();
-				}, 300);
+				}, 400);
 				break;
 				
 			default:
@@ -89,9 +80,9 @@ class Panzer {
 	stopMove(){
 		this.element.sprite.setSpeed(0, 0); //Stanna den
 		this.element.sprite.x = this.target.x; //Sätt den på exakt rätt plats
+		this.element.sprite.rotation = 0;
 		this.animation_ready = true; //Redo för nästa animation
-		console.log("Panzer stoppad");
-		//tas ut ur CurrentlyMoving i draw() i sketch.js
+		//tas ut ur CurrentlyMoving i draw() i sketch.js, eftersom den då ändå har index till this.
 	}
 	
 	skipRight() {

@@ -114,6 +114,23 @@ module.exports = class Game {
 		this.players[1].animation = [];
 		
 		
+		
+		
+		
+		
+		
+		
+		//Kolla om någon av dem skall synas vid den öppna dörren innan resten av animationerna börjar
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		//Gå igenom de tre movesen vardera klient har valt
 		for(let i = 0; i < 3; i++){
 			//Bestämmer om p1 eller p2 prioriteras
