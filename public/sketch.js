@@ -143,6 +143,13 @@ function setup() {
 	
 	socket.on('animation_state', function(animation){
 		alert("Animation received: " + animation);
+		//Bygg en animationshanterare
+		
+		//Hur skall man göra det för de olika panzerobjekten?
+		//Pusha animationerna bitar i taget. Sp pusha p1 fram till dess att p2 skall göra något. Exekvera. Pusha p2 fram till dess att p1 skall göra något. Exekvera osv osv.
+		//Eller bara pusha en, exekvera den. Pusha nästa, exekvera den. 
+		
+		//Efter detta skall servern skicka ett nytt game object, så man kan se att allt stämmer överens (kanske först i nästa state though)
 	});
 	
 	// För att förhindra scroll på mobilen

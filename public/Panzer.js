@@ -1,10 +1,10 @@
 class Panzer {
 	
 	constructor(pos, img1, img2) {
-		this.pos = pos; //Pos avgör vilken dörr pansarvagnen är vid
+		this.pos = pos; //Pos avgör vilken dörr pansarvagnen är vid lokalt
 		this.img1 = img1;
 		this.img2 = img2;
-		this.element = new Element('panzer', 0, 270, 270, ['assets/tank.png', 'assets/tank_fire.png']);
+		this.element = new Element('panzer', pos, 270, 270, [img1, img2]);
 		
 		this.animation_queue = [];
 		this.target = {x: 0, y: 0};

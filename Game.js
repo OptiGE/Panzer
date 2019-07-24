@@ -113,23 +113,12 @@ module.exports = class Game {
 		this.players[0].animation = [];
 		this.players[1].animation = [];
 		
-		
-		
-		
-		
-		
-		
-		
 		//Kolla om någon av dem skall synas vid den öppna dörren innan resten av animationerna börjar
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		if(this.isAtOpenDoor(this.players[0])){
+			this.players[1].animation.push([player[0].id, 'is_at_open_door']);
+		}else if (this.isAtOpenDoor(this.players[1])){
+			this.players[0].animation.push([player[1].id, 'is_at_open_door']);
+		}
 		
 		//Gå igenom de tre movesen vardera klient har valt
 		for(let i = 0; i < 3; i++){
