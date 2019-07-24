@@ -141,22 +141,17 @@ function setup() {
 		gameState = 2;
 	});
 	
-	socket.on('animation_state', function(animation){
-		alert("Animation received: " + animation);
-		//Bygg en animationshanterare
-		
-		//Hur skall man göra det för de olika panzerobjekten?
-		//Pusha animationerna bitar i taget. Sp pusha p1 fram till dess att p2 skall göra något. Exekvera. Pusha p2 fram till dess att p1 skall göra något. Exekvera osv osv.
-		//Eller bara pusha en, exekvera den. Pusha nästa, exekvera den. 
-		
-		//Efter detta skall servern skicka ett nytt game object, så man kan se att allt stämmer överens (kanske först i nästa state though)
+	socket.on('animation_state', function(animations){
+		alert("Animation received: " + animations);
+		console.log("Animations: " + animations);
+		playAnimations(animations);
 	});
 	
 	// För att förhindra scroll på mobilen
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	SceneSetup.gameScene();
+	SceneSetup.loginScene();
 	
 	
 }
@@ -185,9 +180,7 @@ function draw() {
 				if(moving_element.element.sprite.position.x >= moving_element.target.x){
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
 					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
-					
-					moving_element.nextMove();
-					break;
+					//moving_element.nextMove();
 				}
 			}
 			if(moving_element.element.sprite.getDirection() == 180){ //Om den rör sig åt vänster
@@ -195,8 +188,7 @@ function draw() {
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
 					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
 					
-					moving_element.nextMove();
-					break;
+					//moving_element.nextMove();
 				}
 			}
 		}
@@ -280,6 +272,65 @@ function launchAction(slot) {
 		default:
 			break;
 	}
+}
+
+function playAnimations(animation_list){
+	//Animation list ser ut som: [[id, animaiton],[id, animation],[id, animation]]
+	//animaiton_list[i][0] = id
+	//animaiton_list[i][1] = animation
+	
+	for(let i = 0; i < animation_list.length; i ++){	
+		let tank = p1;
+		
+		//Välj vilken tank som skall flyttas
+		if(animation_list[i][0] == myID){
+			tank = p1;
+		}else if(animation_list[i][0] == opponentID){
+			tank = p2;
+		}else{
+			console.log("Varning! - " + animation_list[i][0] + " är inte tt korrekt ID");
+		}
+		
+		tank.animate(animation_list[i][1]);
+		console.log("Executing move: " + animation_list[i][1]);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//Här är nästa problem
+		//Den går vidare utan att vänta på att förra animationen är klar
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+	
 }
 
 function mouseReleased() {

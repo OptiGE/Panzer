@@ -124,8 +124,8 @@ class SceneSetup{
 		
 		//Panzer
 		p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');
-		//p2 = new Panzer(2, 'assets/tank2.png', 'assets/tank2_fire.png');
-		//p2.element.sprite.position.y -= (p2.element.sprite.scale * 270); //Flytta upp P2 så den ligger högre upp på skärmen
+		p2 = new Panzer(2, 'assets/tank2.png', 'assets/tank2_fire.png');
+		p2.element.sprite.position.y -= (p2.element.sprite.scale * 270); //Flytta upp P2 så den ligger högre upp på skärmen
 		
 		//Actionfield-variabler
 		slotArray = [slot_1, slot_2, slot_3];
@@ -147,8 +147,8 @@ class SceneSetup{
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
 		
+		/*
 		p1.animation_queue.push("wait");
-
 		p1.animation_queue.push("move_right");
 		p1.animation_queue.push("wait");
 		p1.animation_queue.push("move_right");
@@ -159,7 +159,7 @@ class SceneSetup{
 		p1.animation_queue.push("wait");
 		p1.animation_queue.push("fire");
 		p1.nextMove();
-		
+		*/
 		
 	}
 }

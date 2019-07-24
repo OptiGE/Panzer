@@ -11,16 +11,16 @@ class Panzer {
 		this.animation_ready = true;
 	}
 	
-	nextMove(){
+	animate(move){ //Hette tidigare nextMove
 		
 		//Säkerhetskollar
 		if(!this.animation_ready){return;}
-		if(this.animation_queue.length < 1){return;}
+		//if(this.animation_queue.length < 1){return;}
 		
 		var self = this; //Behövs i lägre scopes nedan
-		var next_animation = this.animation_queue.shift(); //shift tar bort och returnerar det äldsta elementet
+		//var next_animation = this.animation_queue.shift(); //shift tar bort och returnerar det äldsta elementet
 
-		switch(next_animation){
+		switch(move){
 			
 			case 'move_left':
 				if(this.pos > 0){
@@ -57,7 +57,7 @@ class Panzer {
 				setTimeout(function(elem) {
 				elem.animation.changeFrame(0);
 				self.animation_ready = true;
-				self.nextMove();
+				//self.nextMove();
 				}, 300, this.element.sprite);
 				break;
 				
@@ -66,12 +66,12 @@ class Panzer {
 				
 				setTimeout(function() {
 				self.animation_ready = true;
-				self.nextMove();
+				//self.nextMove();
 				}, 1500);
 				break;
 				
 			default:
-				console.log("Invalid animation input: " + next_animation);
+				console.log("Invalid animation input: " + move);
 		}
 		
 	}

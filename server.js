@@ -186,6 +186,11 @@ function newConnection(socket) {
 		this_room = Object.keys(socket.rooms)[1];
 		this_game = roomMap.get(this_room)[2];
 		
+		if(!(this_game.game_state == "sequence_state")){
+			console.log("Någon försökte skicka en sekvens i fel game state");
+			return;
+		}
+		
 		//Kolla om avsändaren redan har en sekvens, annars fyll i den
 		if(this_game.getPlayerFromID(socket.id).sequence != []){
 			this_game.getPlayerFromID(socket.id).sequence = this_game.controlledSequence(sequence);
@@ -204,6 +209,10 @@ function newConnection(socket) {
 			
 			socket.emit('animation_state', this_animation); //Till den aktiva socketen
 			socket.to(this_room).emit('animation_state', other_animation); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
+			
+			this_game.game_state = "animation_state";
+			
+			console.log("Animation strings are sent");
 			
 			//Nu en megaemit med alla nya värden?
 			//socket.emitToHelaRummet('game_state_update', gameStateInfoBös);

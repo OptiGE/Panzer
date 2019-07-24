@@ -105,6 +105,8 @@ module.exports = class Game {
 	//Både räknar ut vad som händer i spelet och fyller player.animation med det den skall visa
 	execSequence(){
 		
+		let self = this;
+		
 		if(this.players[0].sequence.length != 3 || this.players[1].sequence.length != 3){
 			console.log("Both players do not have a sequence yet!");
 		}
@@ -115,20 +117,20 @@ module.exports = class Game {
 		
 		//Kolla om någon av dem skall synas vid den öppna dörren innan resten av animationerna börjar
 		if(this.isAtOpenDoor(this.players[0])){
-			this.players[1].animation.push([player[0].id, 'is_at_open_door']);
+			self.players[1].animation.push([self.players[0].id, 'stand_in_open_door']);
 		}else if (this.isAtOpenDoor(this.players[1])){
-			this.players[0].animation.push([player[1].id, 'is_at_open_door']);
+			self.players[0].animation.push([self.players[1].id, 'stand_in_open_door']);
 		}
 		
 		//Gå igenom de tre movesen vardera klient har valt
 		for(let i = 0; i < 3; i++){
 			//Bestämmer om p1 eller p2 prioriteras
-			if (this.current_player == 0){
-				this.execMove(this.players[0].sequence[i], this.players[0]);
-				this.execMove(this.players[1].sequence[i], this.players[1]);
+			if (self.current_player == 0){
+				self.execMove(self.players[0].sequence[i], self.players[0]);
+				self.execMove(self.players[1].sequence[i], self.players[1]);
 			}else{                            
-				this.execMove(this.players[1].sequence[i], this.players[1]);
-				this.execMove(this.players[0].sequence[i], this.players[0]);
+				self.execMove(self.players[1].sequence[i], self.players[1]);
+				self.execMove(self.players[0].sequence[i], self.players[0]);
 			}
 		}
 	}
@@ -139,12 +141,12 @@ module.exports = class Game {
 			
 			//Stop_lock
 			case 1:
-				player.animation.push([player.id, 'stay']);
+				player.animation.push([player.id, 'wait']);
 				break;
 			
 			//Stop
 			case 2:
-				player.animation.push([player.id, 'stay']);
+				player.animation.push([player.id, 'wait']);
 				break;
 					
 			//Left	
