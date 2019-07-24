@@ -179,7 +179,6 @@ function draw() {
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
 					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
 					
-					console.log("Högerstopp -> trigger");
 					moving_element.nextMove();
 					break;
 				}
@@ -189,7 +188,6 @@ function draw() {
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
 					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
 					
-					console.log("Vänster -> trigger");
 					moving_element.nextMove();
 					break;
 				}

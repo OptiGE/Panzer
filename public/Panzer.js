@@ -62,13 +62,12 @@ class Panzer {
 				break;
 				
 			case 'wait':
-				console.log("Waiting");
 				this.animation_ready = false;
 				
 				setTimeout(function() {
 				self.animation_ready = true;
 				self.nextMove();
-				}, 400);
+				}, 1500);
 				break;
 				
 			default:
