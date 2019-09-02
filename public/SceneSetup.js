@@ -125,7 +125,7 @@ class SceneSetup{
 		//Panzer
 		p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');
 		p2 = new Panzer(2, 'assets/tank2.png', 'assets/tank2_fire.png');
-		p2.element.sprite.position.y -= (p2.element.sprite.scale * 270); //Flytta upp P2 så den ligger högre upp på skärmen
+		p2.element.sprite.position.y -= (p2.element.sprite.scale * 220); //Flytta upp P2 så den ligger högre upp på skärmen
 		
 		//Actionfield-variabler
 		slotArray = [slot_1, slot_2, slot_3];
@@ -143,23 +143,20 @@ class SceneSetup{
 		
 		door_1.sprite.onMousePressed = EventHandler.DoorHandler(0, door_1);
 		door_2.sprite.onMousePressed = EventHandler.DoorHandler(1, door_2);
+		door_2.sprite.debug = true;
 		door_3.sprite.onMousePressed = EventHandler.DoorHandler(2, door_3);
+		
+		p2.element.sprite.depth = door_1.sprite.depth - 1;
+		p2.element.sprite.debug = true;
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
 		
-		/*
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_right");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_right");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_left");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("fire");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("fire");
-		p1.nextMove();
-		*/
+		
+		
+		p2.animate("move_in_from_right");
+		p1.animate("move_in_from_left");
+		
+		
 		
 	}
 }

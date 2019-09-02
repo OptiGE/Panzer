@@ -16,7 +16,7 @@ var btn_stop, btn_left, btn_right, btn_fire;
 var actionfield;
 var slot_1, slot_2, slot_3;
 var field_1, field_2;
-var door_1, door_2, door_3, doors;
+var door_1, door_2, door_3, doors; //Door 1-2 läggs i arrayen doors i Scene setup
 
 var hearts_p1 = [];
 var hearts_p2 = [];
@@ -44,9 +44,12 @@ var currentlyMoving = [];
 
 	
 var gameObj = {
-	this_id: '', //antingen p1 eller p2
-	opponent_id: '', //antingen p1 eller p2
-	this_pos: 1,
+	
+	
+	openDoor: 1,                         //KOM IHÅG ATT DEFAULTA TILL -1 SEDAN. 
+	
+	
+	
 	this_health: 3,
 	opponent_health: 3,
 	current_player: 0 //0 för denna klient, 1 för motståndaren
@@ -130,12 +133,14 @@ function setup() {
 	socket.on('sequence_state', function(doorNr){
 		if (doorNr == 0){
 			door_1.sprite.animation.changeFrame(1);
-			console.log(doorNr);
 		}else if (doorNr == 1){
 			door_2.sprite.animation.changeFrame(1);
 		}else if (doorNr == 2){
 			door_3.sprite.animation.changeFrame(1);
 		}
+		
+		gameObj.openDoor = doorNr;
+		
 		alert("Door chosen. Please pick a sequence");
 		buttons_clickable = true;
 		gameState = 2;
@@ -151,7 +156,7 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	SceneSetup.loginScene();
+	SceneSetup.gameScene();
 	
 	
 }
@@ -180,14 +185,15 @@ function draw() {
 				if(moving_element.element.sprite.position.x >= moving_element.target.x){
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
 					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
+					console.log("Length after splicing1: " + currentlyMoving.length);
 					//moving_element.nextMove();
 				}
 			}
 			if(moving_element.element.sprite.getDirection() == 180){ //Om den rör sig åt vänster
 				if(moving_element.element.sprite.position.x <= moving_element.target.x){
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
-					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
-					
+					currentlyMoving.splice(i, 1); //Ta ut den ur currentlyMoving;
+
 					//moving_element.nextMove();
 				}
 			}
