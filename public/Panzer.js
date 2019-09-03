@@ -77,9 +77,9 @@ class Panzer {
 				this.element.sprite.animation.changeFrame(1);
 				
 				setTimeout(function(elem) {
-				elem.animation.changeFrame(0);
-				self.animation_ready = true;
-				//self.nextMove();
+					elem.animation.changeFrame(0);
+					self.animation_ready = true;
+					global_animation_running = false;
 				}, 300, this.element.sprite);
 				break;
 				
@@ -89,8 +89,8 @@ class Panzer {
 				this.animation_ready = false;
 				
 				setTimeout(function() {
-				self.animation_ready = true;
-				//self.nextMove();
+					self.animation_ready = true;
+					global_animation_running = false;
 				}, 1500);
 				break;
 				
@@ -105,6 +105,7 @@ class Panzer {
 		this.element.sprite.position.x = this.target.x; //Sätt den på exakt rätt plats
 		this.element.sprite.rotation = 0;
 		this.animation_ready = true; //Redo för nästa animation
+		global_animation_running = false;
 		//tas ut ur CurrentlyMoving i draw() i sketch.js, eftersom den då ändå har index till this.
 	}
 	
