@@ -151,9 +151,9 @@ function setup() {
 	$('body').addClass('overflow'); 
 	
 	// Starta login scenen
-	SceneSetup.loginScene();
+	SceneSetup.gameScene();
 	
-	
+	playAnimations([[opponentID, "move_in_from_right"], [myID, "move_left"]]);
 }
 
 function draw() {

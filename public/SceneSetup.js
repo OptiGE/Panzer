@@ -147,19 +147,6 @@ class SceneSetup{
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
 		
-		/*
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_right");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_right");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("move_left");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("fire");
-		p1.animation_queue.push("wait");
-		p1.animation_queue.push("fire");
-		p1.nextMove();
-		*/
 		
 	}
 }
