@@ -16,7 +16,7 @@ var btn_stop, btn_left, btn_right, btn_fire;
 var actionfield;
 var slot_1, slot_2, slot_3;
 var field_1, field_2;
-var door_1, door_2, door_3, doors;
+var door_1, door_2, door_3, doors; //Door 1-2 läggs i arrayen doors i Scene setup
 
 var hearts_p1 = [];
 var hearts_p2 = [];
@@ -39,14 +39,19 @@ var	chosenDoorNr = -1;
 var gameState = 1;
 const waitingState = 0, pickDoorState = 1, pickSequenceState = 2, animationState = 3, gameOverState = 4;
 
-//Array för alla objekt som rör sig
-var currentlyMoving = [];
+//Animationsvariabler
+var currentlyMoving = []; //Array för alla objekt som rör sig
+var animation_list = [];
+var global_animation_running = false;
 
 	
 var gameObj = {
-	this_id: '', //antingen p1 eller p2
-	opponent_id: '', //antingen p1 eller p2
-	this_pos: 1,
+	
+	
+	openDoor: 1,                         //KOM IHÅG ATT DEFAULTA TILL -1 SEDAN. 
+	
+	
+	
 	this_health: 3,
 	opponent_health: 3,
 	current_player: 0 //0 för denna klient, 1 för motståndaren
@@ -130,12 +135,14 @@ function setup() {
 	socket.on('sequence_state', function(doorNr){
 		if (doorNr == 0){
 			door_1.sprite.animation.changeFrame(1);
-			console.log(doorNr);
 		}else if (doorNr == 1){
 			door_2.sprite.animation.changeFrame(1);
 		}else if (doorNr == 2){
 			door_3.sprite.animation.changeFrame(1);
 		}
+		
+		gameObj.openDoor = doorNr;
+		
 		alert("Door chosen. Please pick a sequence");
 		buttons_clickable = true;
 		gameState = 2;
@@ -143,8 +150,13 @@ function setup() {
 	
 	socket.on('animation_state', function(animations){
 		alert("Animation received: " + animations);
-		console.log("Animations: " + animations);
-		playAnimations(animations);
+		
+		animation_list = animations; //Hade hellre lagt in dem än att skriva över, men tar det i framtiden
+		
+		for (let value of animations) {
+			console.log("----a----");
+			console.log(value);
+		}
 	});
 	
 	// För att förhindra scroll på mobilen
@@ -169,29 +181,59 @@ function draw() {
 		}
 		
 		
-		//Kan skrivas kortare och snyggare!
+		//Här ska den jobba igenom animationerna i den ordning den har fått dem
+		//Kolla igenom objekten som väntar på att få nästa animation startade
+		
+		//Kanske
+		
+		if(!global_animation_running && animation_list.length != 0){
+			let animation = animation_list.shift();
+			
+			if(animation[0] == myID){
+				global_animation_running = true; //animation_running sätts till false på lite olika ställen, men alltid i Panzer filen
+				p1.animate(animation[1]);
+			}else if(animation[0] == opponentID){
+				global_animation_running = true; //animation_running sätts till false på lite olika ställen, men alltid i Panzer filen
+				p2.animate(animation[1]);
+			}else{
+				console.log("Varning! - " + animation[0] + " är inte ett korrekt ID");
+			}
+		}
+		
+		/*
+
+		if noAnimationsRunning
+		
+			if nextAnimation.id == this_player
+				p1.animation(nextAnimation.animation)
+			if nextAnimation.id == opponent_player
+				p1.animation(nextAnimation.animation)
+			if nextAnimation.id == door
+				p1.animation(nextAnimation.animation)
+			if nextAnimation.id == whatever
+				p1.animation(nextAnimation.animation)
+		
+		
+		
+		*/
+		
+		
 		//Kolla om de objekt som rör på sig har nått sitt target. Isf stanna dem
+		
 		for(i = 0; i < currentlyMoving.length; i++){
 			
 			moving_element = currentlyMoving[i];
 			
-			if(moving_element.element.sprite.getDirection() == 0){ //Om den rör sig åt höger
-				
-				if(moving_element.element.sprite.position.x >= moving_element.target.x){
+			/*	Om objektet rör sig åt höger blir factor 1, om vänster -1. Anledningen är att man kan kolla både < och > på samma rad genom att ha en faktor, eftersom 0 ska kolla om positionen är större och 180 om den är mindre. Matten: x > y == -x < -y evaluerar alltid till sant */
+			
+			let factor = (moving_element.element.sprite.getDirection() == 0) ? 1 : -1; //Kolla om riktningen är 0 eller 180 
+			
+				if(moving_element.element.sprite.position.x * factor >= moving_element.target.x * factor){
 					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
-					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
-					//moving_element.nextMove();
+					currentlyMoving.splice(i, 1); //Ta ut den ur currentlyMoving;
 				}
-			}
-			if(moving_element.element.sprite.getDirection() == 180){ //Om den rör sig åt vänster
-				if(moving_element.element.sprite.position.x <= moving_element.target.x){
-					moving_element.stopMove(); //Stanna den (och sätt den på rätt plats om den har gått för långt)
-					currentlyMoving.splice(i); //Ta ut den ur currentlyMoving;
-					
-					//moving_element.nextMove();
-				}
-			}
 		}
+		
 		
 	}
 }
@@ -274,64 +316,7 @@ function launchAction(slot) {
 	}
 }
 
-function playAnimations(animation_list){
-	//Animation list ser ut som: [[id, animaiton],[id, animation],[id, animation]]
-	//animaiton_list[i][0] = id
-	//animaiton_list[i][1] = animation
-	
-	for(let i = 0; i < animation_list.length; i ++){	
-		let tank = p1;
-		
-		//Välj vilken tank som skall flyttas
-		if(animation_list[i][0] == myID){
-			tank = p1;
-		}else if(animation_list[i][0] == opponentID){
-			tank = p2;
-		}else{
-			console.log("Varning! - " + animation_list[i][0] + " är inte tt korrekt ID");
-		}
-		
-		tank.animate(animation_list[i][1]);
-		console.log("Executing move: " + animation_list[i][1]);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		//Här är nästa problem
-		//Den går vidare utan att vänta på att förra animationen är klar
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	}
-	
-}
+
 
 function mouseReleased() {
 	if(current_scene == 'login_scene'){

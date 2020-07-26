@@ -49,24 +49,48 @@ class Panzer {
 					return;
 				}
 				break;
+			
+			case 'move_in_from_right': //From right innebär att man rör sig åt vänster
+				this.animation_ready = false;
+
+				this.element.sprite.position.x = doors[gameObj.openDoor + 1].sprite.position.x; //Lägg spriten vid dörren ett steg till höger
+				this.target.x = doors[gameObj.openDoor].sprite.position.x; //Target x är vid dörren till vänster
 				
+				this.element.sprite.rotation = 90;
+				this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
+				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
+				break;
+			
+			case 'move_in_from_left': //From right innebär att man rör sig åt vänster
+				this.animation_ready = false;
+
+				this.element.sprite.position.x = doors[gameObj.openDoor - 1].sprite.position.x; //Lägg spriten vid dörren ett steg till vänster
+				this.target.x = doors[gameObj.openDoor].sprite.position.x; //Target x är vid dörren till höger
+				
+				this.element.sprite.rotation = 90;
+				this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
+				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
+				break;			
+			
 			case 'fire':
 				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(1);
 				
 				setTimeout(function(elem) {
-				elem.animation.changeFrame(0);
-				self.animation_ready = true;
-				//self.nextMove();
+					elem.animation.changeFrame(0);
+					self.animation_ready = true;
+					global_animation_running = false;
 				}, 300, this.element.sprite);
 				break;
+				
+				
 				
 			case 'wait':
 				this.animation_ready = false;
 				
 				setTimeout(function() {
-				self.animation_ready = true;
-				//self.nextMove();
+					self.animation_ready = true;
+					global_animation_running = false;
 				}, 1500);
 				break;
 				
@@ -78,9 +102,10 @@ class Panzer {
 	
 	stopMove(){
 		this.element.sprite.setSpeed(0, 0); //Stanna den
-		this.element.sprite.x = this.target.x; //Sätt den på exakt rätt plats
+		this.element.sprite.position.x = this.target.x; //Sätt den på exakt rätt plats
 		this.element.sprite.rotation = 0;
 		this.animation_ready = true; //Redo för nästa animation
+		global_animation_running = false;
 		//tas ut ur CurrentlyMoving i draw() i sketch.js, eftersom den då ändå har index till this.
 	}
 	
