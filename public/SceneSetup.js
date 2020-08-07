@@ -151,12 +151,9 @@ class SceneSetup{
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
 		
-		
-		
+			
 		//p2.animate("move_in_from_right");
 		//p1.animate("move_in_from_left");
-		
-		
 		
 	}
 }
