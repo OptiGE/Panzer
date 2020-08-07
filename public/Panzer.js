@@ -6,6 +6,7 @@ class Panzer {
 		this.img2 = img2;
 		this.element = new Element('panzer', pos, 270, 270, [img1, img2]);
 		
+		this.speed = cWindowWidth / 200;
 		this.animation_queue = [];
 		this.target = {x: 0, y: 0};
 		this.animation_ready = true;
@@ -29,7 +30,7 @@ class Panzer {
 					this.pos --; //0, 1 eller 2
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.rotation = -90;
-					this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
+					this.element.sprite.setSpeed(this.speed, 180); //Börja rör dig åt vänster
 					currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				}else{
 					console.log("Could not move further left");
@@ -44,7 +45,7 @@ class Panzer {
 					this.pos ++; //0, 1 eller 2
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.rotation = 90;
-					this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
+					this.element.sprite.setSpeed(this.speed, 0); //Börja rör dig åt höger
 					currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				}else{
 					console.log("Could not move further right");
@@ -59,7 +60,7 @@ class Panzer {
 				this.target.x = doors[gameObj.openDoor].sprite.position.x; //Target x är vid dörren till vänster
 				
 				this.element.sprite.rotation = 90;
-				this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
+				this.element.sprite.setSpeed(this.speed, 180); //Börja rör dig åt vänster
 				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				break;
 			
@@ -70,10 +71,40 @@ class Panzer {
 				this.target.x = doors[gameObj.openDoor].sprite.position.x; //Target x är vid dörren till höger
 				
 				this.element.sprite.rotation = 90;
-				this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
+				this.element.sprite.setSpeed(this.speed, 0); //Börja rör dig åt höger
 				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
-				break;			
+				break;
+				
+			case 'move_out_to_right':
+				this.animation_ready = false;
+
+				this.element.sprite.position.x = doors[gameObj.openDoor].sprite.position.x; //Lägg spriten vid dörren
+				this.target.x = doors[gameObj.openDoor + 1].sprite.position.x; //Target x är vid dörren till höger
+				
+				this.element.sprite.rotation = 90;
+				this.element.sprite.setSpeed(this.speed, 0); //Börja rör dig åt höger
+				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
+				break;
 			
+			case 'move_out_to_left':
+				this.animation_ready = false;
+
+				this.element.sprite.position.x = doors[gameObj.openDoor].sprite.position.x; //Lägg spriten vid dörren
+				this.target.x = doors[gameObj.openDoor - 1].sprite.position.x; //Target x är vid dörren till vänster
+				
+				this.element.sprite.rotation = 90;
+				this.element.sprite.setSpeed(this.speed, 180); //Börja rör dig åt vänster
+				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
+				break;
+				
+			case 'hit':
+				console.log("I WAS HIT");
+				break;
+				
+			case 'other_hit':
+				console.log("OTHER WAS HIT");
+				break;
+
 			case 'fire':
 				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(1);

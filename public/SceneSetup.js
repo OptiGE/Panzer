@@ -104,9 +104,9 @@ class SceneSetup{
 		field_2 = new Element('heartField', 1, 200, 200, ['assets/heart_field.png']);
 		
 		//Doors ÄNDRA STORLEK PÅ SPRITES FÖR HITBOX
-		door_1 = new Element('doorButton', -15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
-		door_2 = new Element('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
-		door_3 = new Element('doorButton', 15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png']);
+		door_1 = new Element('doorButton', -15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png', 'assets/door_open.png']);
+		door_2 = new Element('doorButton', 0, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png', 'assets/door_open.png']);
+		door_3 = new Element('doorButton', 15, 200, 200, ['assets/door_closed.png', 'assets/door_charged.png', 'assets/door_open.png']);
 		doors = [door_1, door_2, door_3];
 		
 		//Hjärtan
@@ -120,7 +120,7 @@ class SceneSetup{
 		}
 		
 		//Launch-knapp
-		btn_launch = new Element('launchButton', 0, 200, 200, ['assets/btn_fire_up.png', 'assets/btn_fire_p.png']);
+		btn_launch = new Element('launchButton', 0, 200, 200, ['assets/btn_ok_up.png', 'assets/btn_ok_down.png']);
 		
 		//Panzer
 		p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');

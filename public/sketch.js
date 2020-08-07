@@ -48,13 +48,10 @@ var currentlyMoving = []; //Array för alla objekt som rör sig
 var animation_list = []; //Håller en lista av animationer för både p1 och p2, i den ordning de ska komma //Den stoppar in första animationen i p1, väntar tills den är klar, stoppar in nästa i p2 osv osv
 var global_animation_running = false;
 
-	
+// BÖR OCKSÅ HÅLLA KOLLA PÅ POSITIONER OCH ANNAT OCH REGELBUNDET KOLLA MED SERVERNS MOTSVARANDE VÄRDEN!!!!
 var gameObj = {
 	
-	
 	openDoor: -1,                         //KOM IHÅG ATT DEFAULTA TILL -1 SEDAN. 
-	
-	
 	
 	this_health: 3,
 	opponent_health: 3,
@@ -84,7 +81,8 @@ function setup() {
 
 	// Skapa Canvas
 	cWindowWidth = windowWidth;
-	cWindowHeight = windowHeight; 
+	cWindowHeight = windowHeight;
+	console.log("WindowWidth is", windowWidth);
 	createCanvas(cWindowWidth, cWindowHeight);
 	
 	// Bestäm typsnittskaraktäristik
@@ -140,13 +138,9 @@ function setup() {
 	});
 	
 	socket.on('sequence_state', function(doorNr){
-		if (doorNr == 0){
-			door_1.sprite.animation.changeFrame(1);
-		}else if (doorNr == 1){
-			door_2.sprite.animation.changeFrame(1);
-		}else if (doorNr == 2){
-			door_3.sprite.animation.changeFrame(1);
-		}
+		
+		//Mark door as green
+		doors[doorNr].sprite.animation.changeFrame(1);
 		
 		gameObj.openDoor = doorNr;
 		
@@ -158,7 +152,13 @@ function setup() {
 	socket.on('animation_state', function(animations){
 		alert("Animation received: " + animations);
 		
+		//Byt dörrsprite till öppen dörr
+		doors[gameObj.openDoor].sprite.animation.changeFrame(2);
+		
 		animation_list = animations; //Hade hellre lagt in dem än att skriva över, men tar det i framtiden
+		
+		//När den har kört igenom alla skall animation state avslutas
+		animation_list.append("END ANIMATION STATE. GÅ TILL CHOOSE DOOR STATE ELLER NÅT");
 		
 		for (let value of animations) {
 			console.log("----a----");
@@ -173,7 +173,7 @@ function setup() {
 	SceneSetup.loginScene();
 	//SceneSetup.gameScene();
 	
-	playAnimations([[opponentID, "move_in_from_right"], [myID, "move_left"]]);
+	
 }
 
 
