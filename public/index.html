@@ -78,8 +78,8 @@
 			<input type="email" class="form-control" id="inputName" aria-describedby="emailHelp" placeholder="" style="font-size: 3vh !important; ">
 		  </div>
 		  <div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="buttons_clickable = true;">Close</button>
-			<button type="button" class="btn btn-primary" onclick="sendRQ(0); buttons_clickable = true;">Log in</button>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal" onClick="buttons_clickable = true;">Close</button>
+			<button type="button" class="btn btn-primary" onMouseUp="console.log('onMouseUp'); sendRQ(0); buttons_clickable = true;">Log in</button>
 		  </div>
 		</div>
 	  </div>
@@ -97,8 +97,8 @@
 			<input type="email" class="form-control" id="inputCRoomName" aria-describedby="emailHelp" placeholder="" style="font-size: 3vh !important; ">
 		  </div>
 		  <div class="modal-footer">
-			<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="buttons_clickable = true;">Close</button>
-			<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="sendRQ(1); buttons_clickable = true;">Create room</button>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal" onClick="buttons_clickable = true;">Close</button>
+			<button type="button" class="btn btn-primary" data-dismiss="modal" onClick="sendRQ(1); buttons_clickable = true;">Create room</button>
 		  </div>
 		</div>
 	  </div>

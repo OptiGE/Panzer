@@ -1,5 +1,6 @@
 class EventHandler{
 	
+	
 	static ActionHandler(action, btn) {
 		return function() {
 			if(buttons_clickable && all_buttons_up && actionArray.includes(0) && gameState == 2){
@@ -8,7 +9,6 @@ class EventHandler{
 				all_buttons_up = false;
 				if (actionArray.includes(0)) {
 					actionChosen(action);
-					//p1.moveLeft(); //updateHealth(); //test
 				}
 			}else if (!buttons_clickable && all_buttons_up || !actionArray.includes(0) && all_buttons_up) { //fortsätt
 				btn.sprite.animation.changeFrame(2);
@@ -46,6 +46,7 @@ class EventHandler{
 		}
 	}
 
+	
 	static SlotHandler(slot){
 		return function(){
 			if (buttons_clickable && actionArray[slot] != 1) { //Buttonsclickable && man tryckte inte på en grå
@@ -62,10 +63,13 @@ class EventHandler{
 				slotArray[slot].sprite.animation.changeFrame(0);
 				actionArray[slot] = 0;
 				
+			}else{ //Om man tryckte på en grå
+				console.log("Not allowed");
 			}
 		}		   
 	}
 	
+	//NÄR NÅGON TRYCKER PÅ EN DÖRR
 	static DoorHandler(doorNr, door){
 		return function(){
 			console.log("Dörr nedtryckt");
@@ -79,6 +83,7 @@ class EventHandler{
 		}
 	}
 	
+	//ELDKNAPPEN TILL HÖGER
 	static LaunchHandler(){
 		return function(){
 			

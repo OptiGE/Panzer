@@ -25,6 +25,10 @@ var btn_launch;
 
 var p1, p2;
 
+//Fönsterstorlek
+var cWindowWidth; //Konstanta versioner av windowWidth och height som inte ändras när t.ex tangentbord dyker upp på mobil
+var cWindowHeight;
+	
 // Scenvariabler
 var current_scene;
 
@@ -41,20 +45,20 @@ const waitingState = 0, pickDoorState = 1, pickSequenceState = 2, animationState
 
 //Animationsvariabler
 var currentlyMoving = []; //Array för alla objekt som rör sig
-var animation_list = [];
+var animation_list = []; //Håller en lista av animationer för både p1 och p2, i den ordning de ska komma //Den stoppar in första animationen i p1, väntar tills den är klar, stoppar in nästa i p2 osv osv
 var global_animation_running = false;
 
 	
 var gameObj = {
 	
 	
-	openDoor: 1,                         //KOM IHÅG ATT DEFAULTA TILL -1 SEDAN. 
+	openDoor: -1,                         //KOM IHÅG ATT DEFAULTA TILL -1 SEDAN. 
 	
 	
 	
 	this_health: 3,
 	opponent_health: 3,
-	current_player: 0 //0 för denna klient, 1 för motståndaren
+	current_player: 0 //0 för mig själv, 1 för motståndaren
 }
 
 var myID = 'not_assigned';
@@ -79,20 +83,23 @@ function preload() {
 function setup() {
 
 	// Skapa Canvas
-	createCanvas(windowWidth, windowHeight);
+	cWindowWidth = windowWidth;
+	cWindowHeight = windowHeight; 
+	createCanvas(cWindowWidth, cWindowHeight);
 	
 	// Bestäm typsnittskaraktäristik
 	textFont(font);
-	textSize(windowHeight / 10);
+	textSize(cWindowHeight / 10);
 	textAlign(CENTER, CENTER);
 	
 	// Anslut till socketservern
-	socket = io.connect('http://localhost:3000');
+	socket = io.connect(window.location.href); //t.ex 192.168.1.169:3000 eller localhost:3000
 	socket.on('alert', function(msg){alert(msg);});
 	
 	
 	// Event hanterare
 	socket.on('name_approved', function(id){
+		console.log("Name approved");
 		btn_login.sprite.remove();
 		$('#loginModal').modal('hide');
 		SceneSetup.roomScene(id.name);
@@ -105,15 +112,15 @@ function setup() {
 		btn_createroom.sprite.remove();
 		$('#loginModal').modal('hide');
 		SceneSetup.gameScene(room.name, room.p1_nick);
-		gameState = 0;
+		gameState = waitingState;
 		room_name = room.name;
 	});
 	
 	socket.on('p2_joined', function(id){
 		/* textAlign(RIGHT);
-		text(name, windowWidth - (windowHeight / 25), windowHeight / 10); */
+		text(name, cWindowWidth - (cWindowHeight / 25), cWindowHeight / 10); */
 		alert(id.name + ' just joined the game!');
-		gameState = 1;
+		gameState = pickDoorState;
 		p2_nick = id.name;
 		opponentID = id.id;
 	});
@@ -129,7 +136,7 @@ function setup() {
 			gameObj.current_player = 1;
 			alert('Waiting for other player...');
 		}
-		gameState = 1;
+		gameState = pickDoorState;
 	});
 	
 	socket.on('sequence_state', function(doorNr){
@@ -145,7 +152,7 @@ function setup() {
 		
 		alert("Door chosen. Please pick a sequence");
 		buttons_clickable = true;
-		gameState = 2;
+		gameState = pickSequenceState;
 	});
 	
 	socket.on('animation_state', function(animations){
@@ -164,29 +171,35 @@ function setup() {
 	
 	// Starta login scenen
 	SceneSetup.loginScene();
-	
+	//SceneSetup.gameScene();
 	
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//----------------------------- M A I N   L O O P    (A N I M A T I O N E R) -------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function draw() {
-	drawSprites();
-	if (current_scene == 'game_scene' && gameState >= 0) {
+	drawSprites();						
+	
+									  //För kontext har gameState bara relevans i game_scene
+	if (current_scene == 'game_scene' && gameState >= waitingState) {
+		
+		//Måla ut alla perifera grejer så att de inte blir övermålade av bakgrunden
 		textAlign(LEFT);
-		text(p1_nick, windowHeight / 25, windowHeight / 10);
+		text(p1_nick, cWindowHeight / 25, cWindowHeight / 10);
 		textAlign(CENTER);
-		text(room_name, windowWidth / 2, windowHeight / 25);
-		if (gameState > 0) {
-			textAlign(RIGHT);
-			text(p2_nick, windowWidth - (windowHeight / 25), windowHeight / 10);
-		}
+		text(room_name, cWindowWidth / 2, cWindowHeight / 25);
+		textAlign(RIGHT);
+		text(p2_nick, cWindowWidth - (cWindowHeight / 25), cWindowHeight / 10);
 		
 		
 		//Här ska den jobba igenom animationerna i den ordning den har fått dem
 		//Kolla igenom objekten som väntar på att få nästa animation startade
-		
-		//Kanske
-		
-		if(!global_animation_running && animation_list.length != 0){
+		if(animation_list.length != 0 && !global_animation_running){ 
 			let animation = animation_list.shift();
 			
 			if(animation[0] == myID){
@@ -199,24 +212,6 @@ function draw() {
 				console.log("Varning! - " + animation[0] + " är inte ett korrekt ID");
 			}
 		}
-		
-		/*
-
-		if noAnimationsRunning
-		
-			if nextAnimation.id == this_player
-				p1.animation(nextAnimation.animation)
-			if nextAnimation.id == opponent_player
-				p1.animation(nextAnimation.animation)
-			if nextAnimation.id == door
-				p1.animation(nextAnimation.animation)
-			if nextAnimation.id == whatever
-				p1.animation(nextAnimation.animation)
-		
-		
-		
-		*/
-		
 		
 		//Kolla om de objekt som rör på sig har nått sitt target. Isf stanna dem
 		
@@ -341,6 +336,7 @@ function sendRQ(rq){
 		if (document.getElementById('inputName').value != ''){
 			socket.emit('get_name', document.getElementById('inputName').value.toUpperCase());
 		}else{
+			console.log("4");
 			alert("You can't log in without a name!");
 		}
 		

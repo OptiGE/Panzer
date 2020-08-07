@@ -9,7 +9,7 @@ class SceneSetup{
 		current_scene = 'login_scene';
 		
 		//Bakgrund
-		image(bg, 0, 0, windowWidth, windowHeight);
+		image(bg, 0, 0, cWindowWidth, cWindowHeight);
 		
 		//Skapa Create room knapp
 		btn_login = new Element('stdButton', 0, 600, 200, ['assets/btn_login_up.png', 'assets/btn_login_p.png']);
@@ -37,11 +37,11 @@ class SceneSetup{
 		
 		current_scene = 'room_scene';
 		
-		image(bg, 0, 0, windowWidth, windowHeight);
+		image(bg, 0, 0, cWindowWidth, cWindowHeight);
 		
 		//Sätt spelarens namn som titel
 		fill(30, 30, 30);
-		text(name, windowWidth / 2, windowHeight / 3.5); //Center aligned text
+		text(name, cWindowWidth / 2, cWindowHeight / 3.5); //Center aligned text
 		
 		//Skapa knappar
 		btn_joinroom = new Element('stdButton', 0, 600, 200, ['assets/btn_joinroom_up.png', 'assets/btn_joinroom_p.png']);
@@ -79,10 +79,10 @@ class SceneSetup{
 		current_scene = 'game_scene';
 		
 		//Bakgrund
-		bg = new Element('background', 0, 800, 600, ['assets/sky.png']); //image(bg, 0, 0, windowWidth, windowHeight);
+		bg = new Element('background', 0, 800, 600, ['assets/sky.png']); //image(bg, 0, 0, cWindowWidth, cWindowHeight);
 		
 		//Nya regler för text, inte som de som skapades i setup()
-		textSize(min((windowHeight / 25), (windowWidth / 15)));
+		textSize(min((cWindowHeight / 25), (cWindowWidth / 15)));
 		fill(30, 30, 30);
 		
 		//Skapa action-knappar
@@ -153,8 +153,8 @@ class SceneSetup{
 		
 		
 		
-		p2.animate("move_in_from_right");
-		p1.animate("move_in_from_left");
+		//p2.animate("move_in_from_right");
+		//p1.animate("move_in_from_left");
 		
 		
 		

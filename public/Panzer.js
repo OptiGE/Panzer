@@ -22,10 +22,11 @@ class Panzer {
 
 		switch(move){
 			
+			//For this player
 			case 'move_left':
 				if(this.pos > 0){
 					this.animation_ready = false;
-					this.pos --;
+					this.pos --; //0, 1 eller 2
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.rotation = -90;
 					this.element.sprite.setSpeed(5, 180); //Börja rör dig åt vänster
@@ -35,11 +36,12 @@ class Panzer {
 					return;
 				}
 				break;
-				
+			
+			//For this player
 			case 'move_right':
 				if(this.pos < 2){
 					this.animation_ready = false;
-					this.pos ++;
+					this.pos ++; //0, 1 eller 2
 					this.target.x = doors[this.pos].sprite.position.x; //Target x är vid dörren till vänster
 					this.element.sprite.rotation = 90;
 					this.element.sprite.setSpeed(5, 0); //Börja rör dig åt höger
