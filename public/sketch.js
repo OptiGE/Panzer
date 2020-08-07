@@ -124,7 +124,7 @@ function setup() {
 	});
 	
 	socket.on('pick_door_state', function(playerID){
-		alert(playerID + " will now choose a door");
+		//alert(playerID + " will now choose a door");
 		if (myID == playerID) {
 			buttons_clickable = true;
 			gameObj.current_player = 0;
@@ -158,7 +158,7 @@ function setup() {
 		animation_list = animations; //Hade hellre lagt in dem än att skriva över, men tar det i framtiden
 		
 		//När den har kört igenom alla skall animation state avslutas
-		animation_list.append("END ANIMATION STATE. GÅ TILL CHOOSE DOOR STATE ELLER NÅT");
+		//animation_list.append("END ANIMATION STATE. GÅ TILL CHOOSE DOOR STATE ELLER NÅT");
 		
 		for (let value of animations) {
 			console.log("----a----");

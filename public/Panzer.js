@@ -1,10 +1,8 @@
 class Panzer {
 	
-	constructor(pos, img1, img2) {
+	constructor(pos, imageArray) {
 		this.pos = pos; //Pos avgör vilken dörr pansarvagnen är vid lokalt
-		this.img1 = img1;
-		this.img2 = img2;
-		this.element = new Element('panzer', pos, 270, 270, [img1, img2]);
+		this.element = new Element('panzer', pos, 270, 270, imageArray);
 		
 		this.speed = cWindowWidth / 200;
 		this.animation_queue = [];
@@ -98,22 +96,26 @@ class Panzer {
 				break;
 				
 			case 'hit':
-				console.log("I WAS HIT");
-				break;
+				console.log("PANG I PLANETEN");
+				this.animation_ready = false;
+				this.element.sprite.animation.changeFrame(2); //Träffad-bilden
 				
-			case 'other_hit':
-				console.log("OTHER WAS HIT");
+				setTimeout(function(sprite) {
+					sprite.animation.changeFrame(0);
+					self.animation_ready = true;
+					global_animation_running = false;
+				}, 500, this.element.sprite);
 				break;
 
 			case 'fire':
 				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(1);
 				
-				setTimeout(function(elem) {
-					elem.animation.changeFrame(0);
+				setTimeout(function(sprite) {
+					sprite.animation.changeFrame(0);
 					self.animation_ready = true;
 					global_animation_running = false;
-				}, 300, this.element.sprite);
+				}, 500, this.element.sprite);
 				break;
 				
 				

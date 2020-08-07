@@ -123,8 +123,8 @@ class SceneSetup{
 		btn_launch = new Element('launchButton', 0, 200, 200, ['assets/btn_ok_up.png', 'assets/btn_ok_down.png']);
 		
 		//Panzer
-		p1 = new Panzer(0, 'assets/tank.png', 'assets/tank_fire.png');
-		p2 = new Panzer(2, 'assets/tank2.png', 'assets/tank2_fire.png');
+		p1 = new Panzer(0, ['assets/tank.png', 'assets/tank_fire.png', 'assets/tank_hit.png']);
+		p2 = new Panzer(2, ['assets/tank2.png', 'assets/tank2_fire.png', 'assets/tank2_hit.png']);
 		p2.element.sprite.position.y -= (p2.element.sprite.scale * 220); //Flytta upp P2 så den ligger högre upp på skärmen
 		
 		//Actionfield-variabler
@@ -143,11 +143,11 @@ class SceneSetup{
 		
 		door_1.sprite.onMousePressed = EventHandler.DoorHandler(0, door_1);
 		door_2.sprite.onMousePressed = EventHandler.DoorHandler(1, door_2);
-		door_2.sprite.debug = true;
+		//door_2.sprite.debug = true;
 		door_3.sprite.onMousePressed = EventHandler.DoorHandler(2, door_3);
 		
 		p2.element.sprite.depth = door_1.sprite.depth - 1;
-		p2.element.sprite.debug = true;
+		//p2.element.sprite.debug = true;
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
 		
