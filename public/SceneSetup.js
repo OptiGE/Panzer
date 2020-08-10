@@ -110,13 +110,13 @@ class SceneSetup{
 		doors = [door_1, door_2, door_3];
 		
 		//Hjärtan
-		hearts_p1 = [];
-		hearts_p2 = [];
+		hearts.p1 = [];
+		hearts.p2 = [];
 		
 		let i;
 		for (i = 1; i <= 3; i++) {
-			hearts_p1.push(new Element('heart', i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
-			hearts_p2.push(new Element('heart', -i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
+			hearts.p1.push(new Element('heart', i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
+			hearts.p2.push(new Element('heart', -i, 150, 150, ['assets/heart.png', 'assets/btn_null.png']))
 		}
 		
 		//Launch-knapp

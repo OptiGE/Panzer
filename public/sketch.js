@@ -18,12 +18,11 @@ var slot_1, slot_2, slot_3;
 var field_1, field_2;
 var door_1, door_2, door_3, doors; //Door 1-2 läggs i arrayen doors i Scene setup
 
-var hearts_p1 = [];
-var hearts_p2 = [];
+var hearts = {p1: [], p2: []}
 
 var btn_launch;
 
-var p1, p2;
+var p1, p2; //Detta är pansarvagnsobjekten
 
 //Fönsterstorlek
 var cWindowWidth; //Konstanta versioner av windowWidth och height som inte ändras när t.ex tangentbord dyker upp på mobil
@@ -58,10 +57,9 @@ var gameObj = {
 	current_player: 0 //0 för mig själv, 1 för motståndaren
 }
 
-var myID = 'not_assigned';
-var opponentID = 'not_assigned';
-var p1_nick = 'not_assigned';
-var p2_nick = 'not_assigned';
+var p1_id = {nick: 'unassigned_p1_nick', id: 'unassigned_p1_id'};
+var p2_id = {nick: 'unassigned_p2_nick', id: 'unassigned_p2_id'};
+
 var room_name = 'not_assigned';
 
 //-------------------------------------------------------------------------------------------
@@ -101,8 +99,8 @@ function setup() {
 		btn_login.sprite.remove();
 		$('#loginModal').modal('hide');
 		SceneSetup.roomScene(id.name);
-		p1_nick = id.name;
-		myID = id.id;
+		p1_id.nick = id.name;
+		p1_id.id = id.id;
 	});
 	
 	socket.on('join_room_approved', function(room){
@@ -119,13 +117,13 @@ function setup() {
 		text(name, cWindowWidth - (cWindowHeight / 25), cWindowHeight / 10); */
 		alert(id.name + ' just joined the game!');
 		gameState = pickDoorState;
-		p2_nick = id.name;
-		opponentID = id.id;
+		p2_id.nick = id.name;
+		p2_id.id = id.id;
 	});
 	
 	socket.on('pick_door_state', function(playerID){
 		//alert(playerID + " will now choose a door");
-		if (myID == playerID) {
+		if (p1_id.id == playerID) {
 			buttons_clickable = true;
 			gameObj.current_player = 0;
 			alert('Your turn!');
@@ -160,9 +158,11 @@ function setup() {
 		//När den har kört igenom alla skall animation state avslutas
 		//animation_list.append("END ANIMATION STATE. GÅ TILL CHOOSE DOOR STATE ELLER NÅT");
 		
-		for (let value of animations) {
-			console.log("----a----");
-			console.log(value);
+		console.log("----ANIMATIONS----");
+		console.log(p1_id.id, p1_id.nick, p2_id.id, p2_id.nick)
+		for (let animation of animations) {
+			console.log(animation)
+			console.log(nameFromId(animation[0]), animation[1]);
 		}
 	});
 	
@@ -186,16 +186,17 @@ function setup() {
 function draw() {
 	drawSprites();						
 	
+	
 									  //För kontext har gameState bara relevans i game_scene
 	if (current_scene == 'game_scene' && gameState >= waitingState) {
 		
 		//Måla ut alla perifera grejer så att de inte blir övermålade av bakgrunden
 		textAlign(LEFT);
-		text(p1_nick, cWindowHeight / 25, cWindowHeight / 10);
+		text(p1_id.nick, cWindowHeight / 25, cWindowHeight / 10);
 		textAlign(CENTER);
 		text(room_name, cWindowWidth / 2, cWindowHeight / 25);
 		textAlign(RIGHT);
-		text(p2_nick, cWindowWidth - (cWindowHeight / 25), cWindowHeight / 10);
+		text(p2_id.nick, cWindowWidth - (cWindowHeight / 25), cWindowHeight / 10);
 		
 		
 		//Här ska den jobba igenom animationerna i den ordning den har fått dem
@@ -203,10 +204,10 @@ function draw() {
 		if(animation_list.length != 0 && !global_animation_running){ 
 			let animation = animation_list.shift();
 			
-			if(animation[0] == myID){
+			if(animation[0] == p1_id.id){
 				global_animation_running = true; //animation_running sätts till false på lite olika ställen, men alltid i Panzer filen
 				p1.animate(animation[1]);
-			}else if(animation[0] == opponentID){
+			}else if(animation[0] == p2_id.id){
 				global_animation_running = true; //animation_running sätts till false på lite olika ställen, men alltid i Panzer filen
 				p2.animate(animation[1]);
 			}else{
@@ -217,6 +218,8 @@ function draw() {
 		//Kolla om de objekt som rör på sig har nått sitt target. Isf stanna dem
 		
 		for(i = 0; i < currentlyMoving.length; i++){
+			
+			console.log();
 			
 			moving_element = currentlyMoving[i];
 			
@@ -253,6 +256,17 @@ function draw() {
   }
 }
  */
+function nameFromId(id){
+	if (p1_id.id == id){
+		return p1_id.nick;
+	}else if (p2_id.id == id){
+		return p2_id.nick;
+	}else{
+		console.log("WARNING, NO SUCH ID", id)
+		return "No such id";
+	}
+}
+
  
 function windowResized() {
 	console.log("Window resized");
@@ -269,10 +283,14 @@ function actionChosen(frameNr) {
 	console.log(actionArray);
 }
 
-function updateHealth() {
+function updateHealthBar(player) {
+	console.log(p1.health, p2.health);
+	
 	for (i = 0; i < 3; i++){
-		hearts_p1[i].sprite.animation.changeFrame((i < gameObj.this_health) | 0); // Detta är samma som Number(i < gameObj.this_health), fast snabbare
-		hearts_p2[i].sprite.animation.changeFrame((i < gameObj.opponent_health) | 0);
+		console.log("Liv", (i > p1.health) | 0);
+		
+		hearts.p1[i].sprite.animation.changeFrame((i > p1.health - 1) | 0); // Detta är samma som Number(i < gameObj.this_health), fast snabbare
+		hearts.p2[i].sprite.animation.changeFrame((i > p2.health - 1) | 0);
 	}
 }
 

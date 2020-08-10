@@ -4,6 +4,8 @@ class Panzer {
 		this.pos = pos; //Pos avgör vilken dörr pansarvagnen är vid lokalt
 		this.element = new Element('panzer', pos, 270, 270, imageArray);
 		
+		this.health = 3;
+		
 		this.speed = cWindowWidth / 200;
 		this.animation_queue = [];
 		this.target = {x: 0, y: 0};
@@ -11,7 +13,6 @@ class Panzer {
 	}
 	
 	animate(move){ //Hette tidigare nextMove
-		
 		//Säkerhetskollar
 		if(!this.animation_ready){return;}
 		//if(this.animation_queue.length < 1){return;}
@@ -21,7 +22,12 @@ class Panzer {
 
 		switch(move){
 			
-			//For this player
+			case 'stand_in_open_door':
+				this.element.sprite.position.x = doors[gameObj.openDoor].sprite.position.x;
+				self.animation_ready = true;
+				global_animation_running = false;
+				break;
+			
 			case 'move_left':
 				if(this.pos > 0){
 					this.animation_ready = false;
@@ -36,7 +42,6 @@ class Panzer {
 				}
 				break;
 			
-			//For this player
 			case 'move_right':
 				if(this.pos < 2){
 					this.animation_ready = false;
@@ -99,11 +104,16 @@ class Panzer {
 				console.log("PANG I PLANETEN");
 				this.animation_ready = false;
 				this.element.sprite.animation.changeFrame(2); //Träffad-bilden
+				this.health --;
+				updateHealthBar();
 				
 				setTimeout(function(sprite) {
 					sprite.animation.changeFrame(0);
 					self.animation_ready = true;
 					global_animation_running = false;
+					if(this.health < 1){
+						alert("You Lost!")
+					}
 				}, 500, this.element.sprite);
 				break;
 

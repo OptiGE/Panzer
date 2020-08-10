@@ -2,7 +2,10 @@ module.exports = class Game {
 	
 	constructor(room, p1_id, p2_id, current_player){
 		this.room = room;
+		
+		//HELA DEN HÄR RADEN SKALL FASAS UT OCH ISTÄLLET SKALL DATAN FINNAS I RESPEKTIVE PANZER
 		this.players = [{id: p1_id, health: 3, pos: 0, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 0, sequence: [], animation: []}]
+		
 		this.current_player = current_player; //true = p1, false = p2
 		this.open_door = -1; // -1 = undefined
 		this.game_state = 'pre_game'; //pre_game, picking_door, choosing_sequence, animation_playing, game_over
