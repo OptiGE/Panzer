@@ -157,7 +157,6 @@ function setup() {
 		
 		//När den har kört igenom alla skall animation state avslutas
 		//animation_list.append("END ANIMATION STATE. GÅ TILL CHOOSE DOOR STATE ELLER NÅT");
-		
 		console.log("----ANIMATIONS----");
 		console.log(p1_id.id, p1_id.nick, p2_id.id, p2_id.nick)
 		for (let animation of animations) {
@@ -384,6 +383,13 @@ function sendRQ(rq){
 	 }else if (rq == 4){
 		socket.emit('sequence_chosen', actionArray); 
 		console.log("ActionArray som skickades: " + ActionArray);
+	 }
+	 
+	 
+	 }else if (rq == 5){
+		 //Skickar med gameObj för att dubbellkolla att klienten och servern är överens. 
+		 socket.emit('animation_done', gameObj); 
+		 console.log("Skickat till servern att jag är klar med animationer");
 	 }
 	 
  }

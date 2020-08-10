@@ -139,6 +139,12 @@ class Panzer {
 				}, 1500);
 				break;
 				
+			case 'animation_finished':
+				//sendRq 5 = färdig med animationer, kasta in mig i nästa grej
+				sendRQ(5);
+				//Säkert mer som borde fixas här också
+				break;
+				
 			default:
 				console.log("Invalid animation input: " + move);
 		}
