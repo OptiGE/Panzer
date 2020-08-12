@@ -47,6 +47,8 @@ function newConnection(socket) {
 
 	
 	//                                       --- G E T   N A M E   ---
+	
+	
     socket.on('get_name',
       function(name) {
 		name = name.toUpperCase();
@@ -65,6 +67,8 @@ function newConnection(socket) {
     );
 	
 	//                                     --- C R E A T E   R O O M  ---
+	
+	
     socket.on('create_room',
       function(roomName) {
 		roomName = roomName.toUpperCase();
@@ -95,6 +99,8 @@ function newConnection(socket) {
     );
 	
 	//                                      --- J O I N   R O O M  ---
+	
+	
     socket.on('join_room',
 		function(roomName) {
 			roomName = roomName.toUpperCase();
@@ -141,13 +147,18 @@ function newConnection(socket) {
     );
 
 	//										--- D I S C O N N E C T ---
+	
+	
     socket.on('disconnect', function() {
       console.log("Client has disconnected");
 	  //Kom ihåg att ta bort från roomMap vid disconnect
+	  //Och pusha till den andre spelaren att rummet är stängt o dött
     });
   
   
 	//										--- D O O R   C H O S E N ---
+	
+	
 	socket.on('door_chosen', function(door) {
 		
 		this_room = Object.keys(socket.rooms)[1];
@@ -181,6 +192,8 @@ function newConnection(socket) {
 	
 	
 	//										--- S E Q U E N C E   C H O S E N  ---
+	
+	
 	socket.on('sequence_chosen', function(sequence) {
 		console.log("Sequence chosen from " + socket.nickname + "/" + socket.id);
 		this_room = Object.keys(socket.rooms)[1];
@@ -220,6 +233,54 @@ function newConnection(socket) {
 		}
 		
       }
+	);
+	  
+	//										--- A N I M A T I O N    D O N E  ---
+	
+	
+	socket.on('animation_done', function(sequence) {
+		console.log("Animation done from " + socket.nickname + "/" + socket.id);
+		this_room = Object.keys(socket.rooms)[1];
+		this_game = roomMap.get(this_room)[2];
+		
+		if(this_game.game_state != "animation_state"){
+			console.log("Någon försökte skicka att animationen var färdig i fel game state");
+			return;
+		}
+		
+		//Kolla om avsändaren redan har en sekvens, annars fyll i den
+		if(!this_game.getPlayerFromID(socket.id).animation_done){
+			this_game.getPlayerFromID(socket.id).animation_done = true;
+		}else{
+			console.log("Någon har försökt säga att den är färdig med sin animation två gånger");
+		}
+		
+		//Kolla om båda nu har sekvenser, i så fall gå vidare med spelet
+		if(this_game.players[0].animation_done && this_game.players[1].animation_done){
+			console.log("Båda spelare har spelat klart sina animationer i " + this_game.room);
+			
+			this_game.players[0].animation = [];
+			this_game.players[0].sequence = [];
+			this_game.players[1].animation = [];
+			this_game.players[1].sequence = [];
+			
+			//Byt vem som är den aktiva spelaren 
+			this_game.current_player = !this_game.current_player;
+			
+			console.log("This game::::::", this_game.getCurrentPlayer().id);
+			
+			
+			io.in(this_room).emit('pick_door_state', this_game.getCurrentPlayer().id); //Berätta för alla i rummet vems tur det är
+			this_game.game_state = 'pick_door_state';
+			
+			
+			//Nu en megaemit med alla nya värden?
+			//socket.emitToHelaRummet('game_state_update', gameStateInfoBös);
+						
+		}
+		
+      }
+	  
     );
 	
 }

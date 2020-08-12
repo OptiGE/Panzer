@@ -73,7 +73,7 @@ class Panzer {
 				this.element.sprite.position.x = doors[gameObj.openDoor - 1].sprite.position.x; //Lägg spriten vid dörren ett steg till vänster
 				this.target.x = doors[gameObj.openDoor].sprite.position.x; //Target x är vid dörren till höger
 				
-				this.element.sprite.rotation = 90;
+				this.element.sprite.rotation = -90;
 				this.element.sprite.setSpeed(this.speed, 0); //Börja rör dig åt höger
 				currentlyMoving.push(self); //Låt spelloopen kolla om du är klar
 				break;
@@ -140,13 +140,25 @@ class Panzer {
 				break;
 				
 			case 'animation_finished':
+				//Gör redo för nya animationer
+				self.animation_ready = true;
+				global_animation_running = false;
+			
+				//Stäng alla dörrar
+				deselectDoors();
+			
 				//sendRq 5 = färdig med animationer, kasta in mig i nästa grej
 				sendRQ(5);
-				//Säkert mer som borde fixas här också
+				
 				break;
 				
 			default:
+				//Om servern skickade en animation som inte finns
 				console.log("Invalid animation input: " + move);
+				
+				//Gör redo för nya animationer
+				self.animation_ready = true;
+				global_animation_running = false;
 		}
 		
 	}

@@ -4,7 +4,7 @@ module.exports = class Game {
 		this.room = room;
 		
 		//HELA DEN HÄR RADEN SKALL FASAS UT OCH ISTÄLLET SKALL DATAN FINNAS I RESPEKTIVE PANZER
-		this.players = [{id: p1_id, health: 3, pos: 0, sequence: [], animation: []}, {id: p2_id, health: 3, pos: 0, sequence: [], animation: []}]
+		this.players = [{id: p1_id, health: 3, pos: 0, sequence: [], animation: [], animation_done: false}, {id: p2_id, health: 3, pos: 0, sequence: [], animation: [], animation_done: false}]
 		
 		this.current_player = current_player; //true = p1, false = p2
 		this.open_door = -1; // -1 = undefined
@@ -12,7 +12,7 @@ module.exports = class Game {
 	}
 	
 	getCurrentPlayer(){
-		return this.players[this.current_player];
+		return this.players[+ this.current_player]; //Pluset gör om boolean till integer
 	}
 	
 	getPlayerFromID(id){
@@ -136,6 +136,9 @@ module.exports = class Game {
 				self.execMove(self.players[0].sequence[i], self.players[0]);
 			}
 		}
+		
+		this.players[0].animation.push([this.players[0].id, 'animation_finished']);
+		this.players[1].animation.push([this.players[1].id, 'animation_finished']);
 	}
 	
 	execMove(move, player){

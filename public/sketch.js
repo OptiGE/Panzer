@@ -334,9 +334,11 @@ function launchAction(slot) {
 function mouseReleased() {
 	if(current_scene == 'login_scene'){
 		btn_login.sprite.animation.changeFrame(0);
+		
 	}else if (current_scene == 'room_scene'){		
 		btn_joinroom.sprite.animation.changeFrame(0);
 		btn_createroom.sprite.animation.changeFrame(0);
+		
 	}else if (current_scene == 'game_scene'){
 		btn_stop.sprite.animation.changeFrame(0);
 		btn_left.sprite.animation.changeFrame(0);
@@ -383,7 +385,6 @@ function sendRQ(rq){
 	 }else if (rq == 4){
 		socket.emit('sequence_chosen', actionArray); 
 		console.log("ActionArray som skickades: " + ActionArray);
-	 }
 	 
 	 
 	 }else if (rq == 5){
