@@ -149,10 +149,17 @@ function newConnection(socket) {
 	//										--- D I S C O N N E C T ---
 	
 	
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function(ass) {
       console.log("Client has disconnected");
-	  //Kom ihåg att ta bort från roomMap vid disconnect
-	  //Och pusha till den andre spelaren att rummet är stängt o dött
+	  
+	  this_room = Object.keys(socket.rooms)[1];
+	  
+	  socket.emit('err_disconnect', "disconnect"); //Till den aktiva socketen
+	  socket.to(this_room).emit('err_disconnect', "disconnect"); //Till alla i rummet som inte är denna socketen (alltså motståndaren)
+	  console.log("Disconnection error emitted");
+		
+	  roomMap.delete(this_room);
+	  console.log("Room removed");
     });
   
   

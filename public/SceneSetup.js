@@ -25,6 +25,17 @@ class SceneSetup{
 			}
 		};
 	}
+	
+	static gameOverScene(reason){
+		current_scene = 'gameOver_scene';
+		
+		console.log("SETTING UP GAME OVER IMAGE");
+		image(gameOverBg, 0, 0, cWindowWidth, cWindowHeight);
+		
+		//Sätt spelarens namn som titel
+		fill(30, 30, 30);
+		text("GAME OVER", cWindowWidth / 2, cWindowHeight / 3.5); //Center aligned text
+	}
 
 
 	//-------------------------------------------------------------------------------------------------
@@ -150,10 +161,6 @@ class SceneSetup{
 		//p2.element.sprite.debug = true;
 		
 		btn_launch.sprite.onMousePressed = EventHandler.LaunchHandler();
-		
-			
-		//p2.animate("move_in_from_right");
-		//p1.animate("move_in_from_left");
 		
 	}
 }

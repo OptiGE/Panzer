@@ -71,6 +71,7 @@ var room_name = 'not_assigned';
 function preload() {
   //Ladda in non-sprite assets
   bg = loadImage('assets/sky.png');
+  gameOverBg = loadImage('assets/sky_game_over.jpg');
   title = loadImage('assets/title.png');
   font = loadFont('assets/collegeb.ttf');
 }
@@ -163,6 +164,11 @@ function setup() {
 			console.log(animation)
 			console.log(nameFromId(animation[0]), animation[1]);
 		}
+	});
+	
+	socket.on('err_disconnect', function(reason){
+		console.log("GAME OVER SCENE");
+		SceneSetup.gameOverScene(reason);
 	});
 	
 	// För att förhindra scroll på mobilen
